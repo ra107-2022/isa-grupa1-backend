@@ -20,7 +20,7 @@ public class TokenUtils {
     @Value("jutjubic")
     private String APP_NAME;
 
-    @Value("ajdeplsradikobogatemolimplsplspls-ako-bi-mogao-ne-morasakoneces")
+    @Value("ajdeplsradikobogatemolimplsplspls-ako-bi-mogao-ne-morasakoneces.")
     public String SECRET_KEY;
 
     // 3h
@@ -39,10 +39,10 @@ public class TokenUtils {
         return Keys.hmacShaKeyFor(keyBytes);
     }
 
-    public String createToken(String username, Long id) {
+    public String createToken(String email, Long id) {
         return Jwts.builder()
                 .setIssuer(APP_NAME)
-                .setSubject(username)
+                .setSubject(email)
                 .setAudience(AUDIENCE_WEB)
                 .setIssuedAt(new Date())
                 .setExpiration(generateExpirationDate())
@@ -80,18 +80,18 @@ public class TokenUtils {
         return claims;
     }
 
-    public String getUsernameFromToken(String token) {
-        String username;
+    public String getEmailFromToken(String token) {
+        String email;
 
         try {
             final Claims claims = getAllClaimsFromToken(token);
-            username = claims.getSubject();
+            email = claims.getSubject();
         }  catch (ExpiredJwtException ex) {
             throw ex;
         }  catch (Exception e) {
-            username = null;
+            email = null;
         }
-        return username;
+        return email;
     }
 
     public Date getIssuedAtDateFromToken(String token) {
@@ -136,10 +136,14 @@ public class TokenUtils {
 
     public Boolean validateToken(String token, UserDetails userDetails) {
         User user = (User) userDetails;
-        final String username = getUsernameFromToken(token);
+        final String username = getEmailFromToken(token);
         final Date issuedAt = getIssuedAtDateFromToken(token);
         final Date expiration = getExpirationDateFromToken(token);
 
-        return (username != null && username.equals(user.getUsername()) && issuedAt.before(expiration));
+        return (username != null && username.equals(user.getEmail()) && issuedAt.before(expiration));
+    }
+
+    public int getExpiredIn() {
+        return EXPIRES_IN;
     }
 }

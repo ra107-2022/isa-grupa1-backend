@@ -29,15 +29,15 @@ public class TokenAuthenticationFilter extends OncePerRequestFilter {
 
     @Override
     public void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain) throws IOException, ServletException {
-        String username;
+        String email;
 
         String token = tokenUtils.getToken(request);
 
         try {
             if (token != null) {
-                username = tokenUtils.getUsernameFromToken(token);
-                if (username != null) {
-                    UserDetails  userDetails = userDetailsService.loadUserByUsername(username);
+                email = tokenUtils.getEmailFromToken(token);
+                if (email != null) {
+                    UserDetails  userDetails = userDetailsService.loadUserByUsername(email);
                     if (tokenUtils.validateToken(token, userDetails)) {
                         TokenBasedAuthentication authentication = new TokenBasedAuthentication(userDetails);
                         authentication.setToken(token);

@@ -1,9 +1,13 @@
 package grupa1.jutjubic.auth;
 
+import lombok.Getter;
+import lombok.Setter;
 import org.springframework.security.authentication.AbstractAuthenticationToken;
 import org.springframework.security.core.userdetails.UserDetails;
 
 public class TokenBasedAuthentication extends AbstractAuthenticationToken {
+    @Getter
+    @Setter
     private String token;
     private final UserDetails principle;
 
@@ -12,17 +16,9 @@ public class TokenBasedAuthentication extends AbstractAuthenticationToken {
         this.principle = principle;
     }
 
-    public String getToken() {
-        return token;
-    }
-
-    public void setToken(String token) {
-        this.token = token;
-    }
-
     @Override
     public boolean isAuthenticated() {
-        return super.isAuthenticated();
+        return true;
     }
 
     @Override
