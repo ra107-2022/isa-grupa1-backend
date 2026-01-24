@@ -12,7 +12,7 @@ import java.util.List;
 public class User implements UserDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+    private Long id;
 
     @Column(name = "username", unique = true, nullable = false)
     private String username;
@@ -57,10 +57,10 @@ public class User implements UserDetails {
         this.enabled = enabled;
     }
 
-    public Integer getId() {
+    public Long getId() {
         return id;
     }
-    public void setId(Integer id) {
+    public void setId(Long id) {
         this.id = id;
     }
     public String getUsername() {
