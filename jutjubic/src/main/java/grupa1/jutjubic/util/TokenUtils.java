@@ -20,7 +20,7 @@ public class TokenUtils {
     @Value("jutjubic")
     private String APP_NAME;
 
-    @Value("ajdeplsradikobogatemolimplsplspls-ako-bi-mogao-ne-morasakoneces.")
+    @Value("${jwt.secret}")
     public String SECRET_KEY;
 
     // 3h
@@ -36,18 +36,20 @@ public class TokenUtils {
 
     private SecretKey getSigningKey() {
         byte[] keyBytes = SECRET_KEY.getBytes(StandardCharsets.UTF_8);
+        System.out.println("Secret Key Length: " + keyBytes.length);
         return Keys.hmacShaKeyFor(keyBytes);
     }
 
     public String createToken(String email, Long id) {
         return Jwts.builder()
+                .setHeaderParam("typ", "JWT")
                 .setIssuer(APP_NAME)
                 .setSubject(email)
                 .setAudience(AUDIENCE_WEB)
                 .setIssuedAt(new Date())
+                .claim("key", id)
                 .setExpiration(generateExpirationDate())
                 .signWith(getSigningKey(), SIGNATURE_ALGORITHM)
-                .claim("key", id)
                 .compact();
     }
 
