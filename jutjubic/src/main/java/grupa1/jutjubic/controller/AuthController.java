@@ -51,7 +51,7 @@ public class AuthController {
     }
 
     @PostMapping("/signup")
-    public ResponseEntity<User> addUser(@RequestBody UserRequest request) {
+    public ResponseEntity<UserTokenState> addUser(@RequestBody UserRequest request) {
         User existingUser = this.userService.findByUsername(request.getUsername());
         if (existingUser != null) {
             throw new ResourceConflictException(request.getId(), "Username already exists");
@@ -63,7 +63,14 @@ public class AuthController {
 
         User user = this.userService.save(request);
 
-        return new ResponseEntity<>(user, HttpStatus.CREATED);
+        Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(
+                user.getEmail(), user.getPassword()));
 
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+
+        String jwt = tokenUtils.createToken(user.getEmail(), user.getId());
+        int expiredIn = tokenUtils.getExpiredIn();
+
+        return ResponseEntity.ok(new UserTokenState(jwt, expiredIn));
     }
 }
