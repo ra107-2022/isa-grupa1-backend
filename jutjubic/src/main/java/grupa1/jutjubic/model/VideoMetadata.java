@@ -3,9 +3,7 @@ package grupa1.jutjubic.model;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
-import org.springframework.data.jpa.repository.Query;
 
-import java.sql.Date;
 import java.time.LocalDateTime;
 
 @Setter
