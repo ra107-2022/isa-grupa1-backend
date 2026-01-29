@@ -1,8 +1,13 @@
 package grupa1.jutjubic.controller;
 
 import grupa1.jutjubic.dto.UploadRequest;
+import grupa1.jutjubic.dto.VideoInfo;
 import grupa1.jutjubic.model.VideoMetadata;
+import grupa1.jutjubic.model.VideoView;
+import grupa1.jutjubic.service.IVideoMetadataService;
+import grupa1.jutjubic.service.IViewService;
 import grupa1.jutjubic.service.impl.VideoMetadataService;
+import grupa1.jutjubic.service.impl.ViewService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpStatus;
@@ -20,6 +25,9 @@ public class VideoController {
 
     @Autowired
     private VideoMetadataService videoService;
+
+    @Autowired
+    private ViewService viewService;
 
     @PostMapping("/upload")
     public ResponseEntity<VideoMetadata> uploadVideo(
@@ -73,4 +81,19 @@ public class VideoController {
                         .build());
     }
 
+    @GetMapping("/{id}/video_info")
+    public ResponseEntity<VideoInfo> getVideoInfo(
+            @PathVariable Long id
+        ) {
+        return viewService.getViewCount(id)
+                .map(viewCount -> videoService
+                        .findById(id)
+                        .map(metadata -> ResponseEntity
+                                .ok()
+                                .body(new VideoInfo(metadata.getVideoTitle(), viewCount, metadata.getUser().getUsername())))
+                        .orElseGet(() -> ResponseEntity
+                                .notFound()
+                                .build()))
+                .orElseGet(() -> ResponseEntity.notFound().build());
+    }
 }

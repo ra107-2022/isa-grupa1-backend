@@ -11,15 +11,16 @@ import java.time.LocalDateTime;
 @Entity
 @Table (
         name="VIDEO_METADATA",
-        uniqueConstraints = { @UniqueConstraint(columnNames = {"owner_id", "video_title"}) }
+        uniqueConstraints = { @UniqueConstraint(columnNames = {"user_id", "video_title"}) }
 )
 public class VideoMetadata {
     @Id
     @GeneratedValue (strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column (name ="owner_id", nullable = false)
-    private Long ownerId;
+    @ManyToOne
+    @JoinColumn (name ="user_id", nullable = false)
+    private User user;
 
     @Column (name = "upload_date", nullable = false)
     private LocalDateTime uploadDate;
@@ -51,9 +52,6 @@ public class VideoMetadata {
     @Column (name = "thumbnail_og_file_name")
     private String thumbnailOriginalFileName;
 
-    @Column (name = "views", nullable = false)
-    private Long views = 0L;
-
     @Column (name = "latitude", nullable = false)
     private Long lat;
 
@@ -61,9 +59,9 @@ public class VideoMetadata {
     private Long lon;
 
     public VideoMetadata() { super(); }
-    public VideoMetadata(Long ownerId, LocalDateTime uploadDate, String videoTitle, String description, String tags, String videoFileName, Long videoSize, String videoOriginalFileName, String thumbnailFileName, Long thumbnailSize, String thumbnailOriginalFileName, Long lat, Long lon) {
+    public VideoMetadata(User user, LocalDateTime uploadDate, String videoTitle, String description, String tags, String videoFileName, Long videoSize, String videoOriginalFileName, String thumbnailFileName, Long thumbnailSize, String thumbnailOriginalFileName, Long lat, Long lon) {
         super();
-        this.ownerId = ownerId;
+        this.user = user;
         this.uploadDate = uploadDate;
         this.videoTitle = videoTitle;
         this.description = description;

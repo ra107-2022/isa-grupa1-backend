@@ -47,7 +47,7 @@ public class VideoMetadataService implements IVideoMetadataService {
         } catch (Exception e) {
             return Optional.empty();
         }
-        return videoMetadataRepository.findByOwnerIdAndVideoTitle(user.getId(), title);
+        return videoMetadataRepository.findByUser_IdAndVideoTitle(user.getId(), title);
     }
 
     @Override
@@ -58,7 +58,7 @@ public class VideoMetadataService implements IVideoMetadataService {
         } catch(Exception e) {
             return Optional.empty();
         }
-        return videoMetadataRepository.findByOwnerIdAndVideoTitle(user.getId(), title);
+        return videoMetadataRepository.findByUser_IdAndVideoTitle(user.getId(), title);
     }
 
     @PostConstruct
@@ -78,9 +78,11 @@ public class VideoMetadataService implements IVideoMetadataService {
 
     @Override
     public Optional<VideoMetadata> save(UploadRequest uploadRequest) {
-         Optional<VideoMetadata> video = videoMetadataRepository.findByOwnerIdAndVideoTitle(uploadRequest.getOwnerId(), uploadRequest.getTitle()) ;
+         Optional<VideoMetadata> video = videoMetadataRepository.findByUser_IdAndVideoTitle(uploadRequest.getOwnerId(), uploadRequest.getTitle()) ;
          if (video.isPresent()) { return Optional.empty(); }
 
+         Optional<User> user_opt = userRepository.findById(uploadRequest.getOwnerId());
+         if (user_opt.isEmpty()) { return Optional.empty(); }
 
          String videoFileName = UUID.randomUUID() + "_" + uploadRequest
                  .getVideo()
@@ -120,8 +122,8 @@ public class VideoMetadataService implements IVideoMetadataService {
                 .map((tag) -> tag.replaceAll("\\|", "_"))
                 .reduce("", (acc, tag) -> acc + "|" + tag);
 
-         return Optional.of(videoMetadataRepository.save(new VideoMetadata(
-                 uploadRequest.getOwnerId(),
+        return Optional.of(videoMetadataRepository.save(new VideoMetadata(
+                 user_opt.get(),
                  LocalDateTime.now(),
                  uploadRequest.getTitle(),
                  uploadRequest.getDescription(),
