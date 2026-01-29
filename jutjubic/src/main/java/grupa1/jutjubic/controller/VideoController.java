@@ -6,6 +6,7 @@ import grupa1.jutjubic.model.VideoMetadata;
 import grupa1.jutjubic.model.VideoView;
 import grupa1.jutjubic.service.IVideoMetadataService;
 import grupa1.jutjubic.service.IViewService;
+import grupa1.jutjubic.service.impl.UserService;
 import grupa1.jutjubic.service.impl.VideoMetadataService;
 import grupa1.jutjubic.service.impl.ViewService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,6 +17,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.security.Principal;
 import java.util.List;
 import java.util.Optional;
 
@@ -27,21 +29,25 @@ public class VideoController {
     private VideoMetadataService videoService;
 
     @Autowired
+    private UserService userService;
+
+    @Autowired
     private ViewService viewService;
 
     @PostMapping("/upload")
     public ResponseEntity<VideoMetadata> uploadVideo(
+            Principal user,
             @RequestParam("title") String title,
             @RequestParam("video") MultipartFile videoFile,
             @RequestParam("thumbnail") MultipartFile thumbnailFile,
-            @RequestParam("userId") Long ownerId,
             @RequestParam("description") String description,
             @RequestParam(name = "latitude", required = false) Long lat,
             @RequestParam(name = "longitude", required = false) Long lon,
             @RequestParam("tags") List<String> tags
         ) {
+        final Long ownerId = userService.findByUsername(user.getName()).getId();
         Optional<VideoMetadata> opt = videoService.save(new UploadRequest(
-                ownerId, title, description, tags, videoFile, thumbnailFile, lat, lon
+               ownerId , title, description, tags, videoFile, thumbnailFile, lat, lon
         ));
         System.out.println(ownerId.toString());
         return opt
