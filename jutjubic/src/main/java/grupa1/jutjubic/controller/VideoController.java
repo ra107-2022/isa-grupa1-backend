@@ -1,8 +1,14 @@
 package grupa1.jutjubic.controller;
 
 import grupa1.jutjubic.dto.UploadRequest;
+import grupa1.jutjubic.dto.VideoInfo;
 import grupa1.jutjubic.model.VideoMetadata;
+import grupa1.jutjubic.model.VideoView;
+import grupa1.jutjubic.service.IVideoMetadataService;
+import grupa1.jutjubic.service.IViewService;
+import grupa1.jutjubic.service.impl.UserService;
 import grupa1.jutjubic.service.impl.VideoMetadataService;
+import grupa1.jutjubic.service.impl.ViewService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpStatus;
@@ -11,6 +17,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.security.Principal;
 import java.util.List;
 import java.util.Optional;
 
@@ -21,19 +28,26 @@ public class VideoController {
     @Autowired
     private VideoMetadataService videoService;
 
+    @Autowired
+    private UserService userService;
+
+    @Autowired
+    private ViewService viewService;
+
     @PostMapping("/upload")
     public ResponseEntity<VideoMetadata> uploadVideo(
+            Principal user,
             @RequestParam("title") String title,
             @RequestParam("video") MultipartFile videoFile,
             @RequestParam("thumbnail") MultipartFile thumbnailFile,
-            @RequestParam("userId") Long ownerId,
             @RequestParam("description") String description,
             @RequestParam(name = "latitude", required = false) Long lat,
             @RequestParam(name = "longitude", required = false) Long lon,
             @RequestParam("tags") List<String> tags
         ) {
+        final Long ownerId = userService.findByUsername(user.getName()).getId();
         Optional<VideoMetadata> opt = videoService.save(new UploadRequest(
-                ownerId, title, description, tags, videoFile, thumbnailFile, lat, lon
+               ownerId , title, description, tags, videoFile, thumbnailFile, lat, lon
         ));
         System.out.println(ownerId.toString());
         return opt
@@ -73,4 +87,27 @@ public class VideoController {
                         .build());
     }
 
+    @GetMapping("/{id}/video_info")
+    public ResponseEntity<VideoInfo> getVideoInfo(
+            @PathVariable Long id
+        ) {
+        return viewService.getViewCount(id)
+                .map(viewCount -> videoService
+                        .findById(id)
+                        .map(metadata -> ResponseEntity
+                                .ok()
+                                .body(new VideoInfo(metadata.getVideoTitle(), viewCount, metadata.getUser().getUsername())))
+                        .orElseGet(() -> ResponseEntity
+                                .notFound()
+                                .build()))
+                .orElseGet(() -> ResponseEntity.notFound().build());
+    }
+
+    @GetMapping("/videos/get_page")
+    public ResponseEntity<List<Long>> getPage(
+            @RequestParam("start") Long start,
+            @RequestParam("count") Long count
+        ) {
+        return ResponseEntity.ok().body(videoService.getPage(start, count));
+    }
 }

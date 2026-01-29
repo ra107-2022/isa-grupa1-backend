@@ -8,12 +8,14 @@ import grupa1.jutjubic.repository.UserRepository;
 import grupa1.jutjubic.repository.VideoMetadataRepository;
 import grupa1.jutjubic.repository.VideoViewRepository;
 import grupa1.jutjubic.service.IViewService;
+import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+@Service
 public class ViewService implements IViewService {
     private UserRepository userRepository;
     private VideoMetadataRepository videoRepository;
