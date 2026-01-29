@@ -64,7 +64,7 @@ public class AuthController {
         User user = this.userService.save(request);
 
         Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(
-                user.getEmail(), user.getPassword()));
+                request.getEmail(), request.getPassword()));
 
         SecurityContextHolder.getContext().setAuthentication(authentication);
 
