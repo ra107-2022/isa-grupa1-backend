@@ -1,0 +1,184 @@
+package grupa1.jutjubic.service.impl;
+
+import grupa1.jutjubic.dto.UploadRequest;
+import grupa1.jutjubic.model.User;
+import grupa1.jutjubic.model.VideoMetadata;
+import grupa1.jutjubic.repository.UserRepository;
+import grupa1.jutjubic.repository.VideoMetadataRepository;
+import grupa1.jutjubic.service.IVideoMetadataService;
+import jakarta.annotation.PostConstruct;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.UrlResource;
+import org.springframework.stereotype.Service;
+
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
+
+@Service
+public class VideoMetadataService implements IVideoMetadataService {
+    @Value("${video.upload-dir:uploads/videos}")
+    private String videoDir;
+
+    @Value("${video.upload-dir:uploads/thumbnails}")
+    private String thumbnailDir;
+
+    @Autowired
+    private VideoMetadataRepository videoMetadataRepository;
+
+    @Autowired
+    private UserRepository userRepository;
+
+    @Override
+    public Optional<VideoMetadata> findById(Long id) { return videoMetadataRepository.findById(id); }
+
+    @Override
+    public Optional<VideoMetadata> findByEmailAndTitle(String email, String title) {
+        User user;
+        try {
+            user = userRepository.findByEmail(email);
+        } catch (Exception e) {
+            return Optional.empty();
+        }
+        return videoMetadataRepository.findByOwnerIdAndVideoTitle(user.getId(), title);
+    }
+
+    @Override
+    public Optional<VideoMetadata> findByUsernameAndTitle(String username, String title) {
+        User user;
+        try {
+            user = userRepository.findByUsername(username);
+        } catch(Exception e) {
+            return Optional.empty();
+        }
+        return videoMetadataRepository.findByOwnerIdAndVideoTitle(user.getId(), title);
+    }
+
+    @PostConstruct
+    public void init() {
+        try {
+            Files.createDirectories(Paths.get(videoDir));
+            Files.createDirectories(Paths.get(thumbnailDir));
+        } catch (Exception e) {
+            throw new RuntimeException("Could not create directories to store videos and thumbnails!");
+        }
+    }
+
+    @Override
+    public List<VideoMetadata> findAll() {
+        return videoMetadataRepository.findAll();
+    }
+
+    @Override
+    public Optional<VideoMetadata> save(UploadRequest uploadRequest) {
+         Optional<VideoMetadata> video = videoMetadataRepository.findByOwnerIdAndVideoTitle(uploadRequest.getOwnerId(), uploadRequest.getTitle()) ;
+         if (video.isPresent()) { return Optional.empty(); }
+
+
+         String videoFileName = UUID.randomUUID() + "_" + uploadRequest
+                 .getVideo()
+                 .getName()
+                 .replaceAll("[^a-zA-Z0-9.\\-]", "_");
+         Path videoPath = Paths.get(videoDir).resolve(videoFileName);
+         try {
+             if (Files.exists(videoPath)) {
+                 return Optional.empty();
+             }
+             Files.copy(uploadRequest.getVideo().getInputStream(), videoPath, StandardCopyOption.REPLACE_EXISTING);
+         } catch (Exception e) {
+             return Optional.empty();
+         }
+
+        String thumbnailFileName = UUID.randomUUID() + "_" + uploadRequest
+                .getThumbnail()
+                .getName()
+                .replaceAll("[^a-zA-Z0-9.\\-]", "_");
+        Path thumbnailPath = Paths.get(thumbnailDir).resolve(videoFileName);
+        try {
+            if (Files.exists(thumbnailPath)) {
+                Files.delete(videoPath);
+                return Optional.empty();
+            }
+            Files.copy(uploadRequest.getThumbnail().getInputStream(), thumbnailPath, StandardCopyOption.REPLACE_EXISTING);
+        } catch (Exception e1) {
+            try {
+                Files.delete(videoPath);
+            } catch (Exception e2) { return Optional.empty(); }
+            return Optional.empty();
+        }
+
+        String tags = uploadRequest
+                .getTags()
+                .stream()
+                .map((tag) -> tag.replaceAll("\\|", "_"))
+                .reduce("", (acc, tag) -> acc + "|" + tag);
+
+         return Optional.of(videoMetadataRepository.save(new VideoMetadata(
+                 uploadRequest.getOwnerId(),
+                 LocalDateTime.now(),
+                 uploadRequest.getTitle(),
+                 uploadRequest.getDescription(),
+                 tags,
+                 videoFileName,
+                 uploadRequest.getVideo().getSize(),
+                 uploadRequest.getVideo().getName(),
+                 thumbnailFileName,
+                 uploadRequest.getThumbnail().getSize(),
+                 uploadRequest.getThumbnail().getName(),
+                 uploadRequest.getLat(),
+                 uploadRequest.getLon()
+         )));
+    }
+
+    @Override
+    public Optional<Resource> loadVideoAsResource(Long id) {
+        Optional<VideoMetadata> metadataOpt = videoMetadataRepository.findById(id);
+        if (metadataOpt.isEmpty()) { return Optional.empty(); }
+        VideoMetadata metadata = metadataOpt.get();
+
+        Path filePath = getFilePath(metadata, true);
+        try {
+            Resource res = new UrlResource(filePath.toUri());
+            if (res.isReadable() && res.exists()) {
+                return Optional.of(res);
+            } else {
+                return Optional.empty();
+            }
+        } catch (Exception e) {
+            return Optional.empty();
+        }
+    }
+
+    @Override
+    public Optional<Resource> loadThumbnailAsResource(Long id) {
+        Optional<VideoMetadata> metadataOpt = videoMetadataRepository.findById(id);
+        if (metadataOpt.isEmpty()) { return Optional.empty(); }
+        VideoMetadata metadata = metadataOpt.get();
+
+        Path filePath = getFilePath(metadata, false);
+        try {
+            Resource res = new UrlResource(filePath.toUri());
+            if (res.isReadable() && res.exists()) {
+                return Optional.of(res);
+            } else {
+                return Optional.empty();
+            }
+        } catch (Exception e) {
+            return Optional.empty();
+        }
+    }
+
+    @Override
+    public Path getFilePath(VideoMetadata metadata, boolean forVideo) {
+        return Paths
+                .get(forVideo ? videoDir : thumbnailDir)
+                .resolve(forVideo ? metadata.getVideoFileName() : metadata.getThumbnailFileName());
+    }
+}
