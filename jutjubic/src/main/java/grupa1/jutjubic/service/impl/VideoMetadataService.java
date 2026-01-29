@@ -21,6 +21,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service
 public class VideoMetadataService implements IVideoMetadataService {
@@ -182,5 +183,16 @@ public class VideoMetadataService implements IVideoMetadataService {
         return Paths
                 .get(forVideo ? videoDir : thumbnailDir)
                 .resolve(forVideo ? metadata.getVideoFileName() : metadata.getThumbnailFileName());
+    }
+
+    @Override
+    public List<Long> getPage(Long start, Long count) {
+        return videoMetadataRepository
+                .findAll()
+                .stream()
+                .map(VideoMetadata::getId)
+                .skip(start * count)
+                .limit(count)
+                .collect(Collectors.toList());
     }
 }

@@ -96,4 +96,12 @@ public class VideoController {
                                 .build()))
                 .orElseGet(() -> ResponseEntity.notFound().build());
     }
+
+    @GetMapping("/videos/get_page")
+    public ResponseEntity<List<Long>> getPage(
+            @RequestParam("start") Long start,
+            @RequestParam("count") Long count
+        ) {
+        return ResponseEntity.ok().body(videoService.getPage(start, count));
+    }
 }

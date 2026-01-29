@@ -17,4 +17,5 @@ public interface IVideoMetadataService {
     Optional<Resource> loadVideoAsResource(Long id);
     Optional<Resource> loadThumbnailAsResource(Long id);
     Path getFilePath(VideoMetadata metadata, boolean forVideo);
+    List<Long> getPage(Long start, Long count);
 }
