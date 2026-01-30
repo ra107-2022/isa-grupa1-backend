@@ -66,6 +66,7 @@ public class WebSecurityConfig {
                 .requestMatchers(HttpMethod.GET, "/api/comments/**").permitAll()
 
                 .requestMatchers("/h2-console/**").permitAll()
+                .requestMatchers("/api/ratings/**").permitAll()
                 .requestMatchers(
                         "/favicon.ico",
                         "/webjars/**",

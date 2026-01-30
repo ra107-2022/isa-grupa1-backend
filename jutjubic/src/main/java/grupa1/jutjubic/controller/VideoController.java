@@ -14,6 +14,7 @@ import org.springframework.core.io.Resource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -35,6 +36,7 @@ public class VideoController {
     private ViewService viewService;
 
     @PostMapping("/upload")
+    @PreAuthorize("hasRole('USER')")
     public ResponseEntity<VideoMetadata> uploadVideo(
             Principal user,
             @RequestParam("title") String title,
