@@ -65,7 +65,7 @@ public class CommentController {
 
 
     //delete
-    @PutMapping("/{commentId}")
+    @DeleteMapping("/{commentId}")
     public ResponseEntity<?> deleteComment(@PathVariable Long commentId,
                                            @RequestBody CommentRequest request,
                                            Authentication authentication)
