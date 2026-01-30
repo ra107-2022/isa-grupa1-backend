@@ -2,6 +2,7 @@ package grupa1.jutjubic.controller;
 
 import grupa1.jutjubic.dto.RatingsCount;
 import grupa1.jutjubic.dto.UserRating;
+import grupa1.jutjubic.service.IActivityService;
 import grupa1.jutjubic.service.IRatingService;
 import grupa1.jutjubic.service.impl.RatingService;
 import grupa1.jutjubic.service.impl.UserService;
