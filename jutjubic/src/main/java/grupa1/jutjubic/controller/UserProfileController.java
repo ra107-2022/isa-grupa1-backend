@@ -35,7 +35,7 @@ public class UserProfileController {
     @Autowired
     private IUserService userService; // Da dobijemo User iz username-a
 
-    // GET profile
+    // GET [za sve korisnike]
     @GetMapping("/{id}")
     public ResponseEntity<?> getUserProfile(@PathVariable Long id) {
         try {
@@ -46,23 +46,41 @@ public class UserProfileController {
         }
     }
 
-    // UPDATE profile
-    @PutMapping("/{id}")
-    public ResponseEntity<?> updateProfile(@PathVariable Long id,
-                                           @RequestBody UserProfileRequest request,
-                                           Authentication authentication) {
+    // GET [My profile]
+    @GetMapping("/me")
+    public ResponseEntity<?> getMyProfile(Authentication authentication) {
         if (authentication == null || !authentication.isAuthenticated()) {
-            return ResponseEntity.status(401).body("You must be logged in to edit profile.");
+            return ResponseEntity.status(401).body("You must be logged in.");
         }
 
         String username = authentication.getName();
         User loggedUser = userService.findByUsername(username);
+
         if (loggedUser == null) {
-            return ResponseEntity.status(401).body("Logged user not found.");
+            return ResponseEntity.status(404).body("Logged user not found.");
         }
 
-        if (!loggedUser.getId().equals(id)) {
-            return ResponseEntity.status(403).body("You are not allowed to edit this profile.");
+        try {
+            UserProfileDTO profile = userProfileService.getProfileById(loggedUser.getId());
+            return ResponseEntity.ok(profile);
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(404).body(e.getMessage());
+        }
+    }
+
+    // UPDATE
+    @PutMapping("/me")
+    public ResponseEntity<?> updateMyProfile(@RequestBody UserProfileRequest request,
+                                             Authentication authentication) {
+        if (authentication == null || !authentication.isAuthenticated()) {
+            return ResponseEntity.status(401).body("You must be logged in.");
+        }
+
+        String username = authentication.getName();
+        User loggedUser = userService.findByUsername(username);
+
+        if (loggedUser == null) {
+            return ResponseEntity.status(404).body("Logged user not found.");
         }
 
         try {
@@ -72,36 +90,32 @@ public class UserProfileController {
             dto.setSurname(request.getSurname());
             dto.setEmail(request.getEmail());
 
-            UserProfileDTO updated = userProfileService.updateProfile(id, dto);
+            UserProfileDTO updated = userProfileService.updateProfile(loggedUser.getId(), dto);
             return ResponseEntity.ok(updated);
         } catch (RuntimeException e) {
-            return ResponseEntity.status(404).body(e.getMessage());
+            return ResponseEntity.status(400).body(e.getMessage());
         }
     }
 
-    // DELETE profile
-    @DeleteMapping("/{id}")
-    public ResponseEntity<?> deleteProfile(@PathVariable Long id,
-                                           Authentication authentication) {
+    // DELETE
+    @DeleteMapping("/me")
+    public ResponseEntity<?> deleteMyProfile(Authentication authentication) {
         if (authentication == null || !authentication.isAuthenticated()) {
-            return ResponseEntity.status(401).body("You must be logged in to delete profile.");
+            return ResponseEntity.status(401).body("You must be logged in.");
         }
 
         String username = authentication.getName();
         User loggedUser = userService.findByUsername(username);
-        if (loggedUser == null) {
-            return ResponseEntity.status(401).body("Logged user not found.");
-        }
 
-        if (!loggedUser.getId().equals(id)) {
-            return ResponseEntity.status(403).body("You are not allowed to delete this profile.");
+        if (loggedUser == null) {
+            return ResponseEntity.status(404).body("Logged user not found.");
         }
 
         try {
-            userProfileService.deleteProfile(id);
-            return ResponseEntity.ok().build();
+            userProfileService.deleteProfile(loggedUser.getId());
+            return ResponseEntity.ok().body("Profile deleted successfully.");
         } catch (RuntimeException e) {
-            return ResponseEntity.status(404).body(e.getMessage());
+            return ResponseEntity.status(400).body(e.getMessage());
         }
     }
 }
