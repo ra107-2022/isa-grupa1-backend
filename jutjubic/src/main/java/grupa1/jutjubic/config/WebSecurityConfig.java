@@ -61,6 +61,8 @@ public class WebSecurityConfig {
         http.authorizeHttpRequests(auth -> auth
                 .requestMatchers("/api/auth/**").permitAll()
 
+                .requestMatchers(HttpMethod.PUT, "/api/videos/*/view").permitAll()
+                .requestMatchers(HttpMethod.PUT, "/api/videos/*/view_by_user").authenticated()
                 .requestMatchers(HttpMethod.GET, "/api/users/**").permitAll()
                 .requestMatchers(HttpMethod.GET, "/api/videos/**").permitAll()
                 .requestMatchers(HttpMethod.GET, "/api/comments/**").permitAll()
