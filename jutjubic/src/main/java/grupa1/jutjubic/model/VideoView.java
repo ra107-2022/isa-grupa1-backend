@@ -9,10 +9,7 @@ import java.time.LocalDateTime;
 @Setter
 @Getter
 @Entity
-@Table (
-        name = "VIDEO_VIEW",
-        uniqueConstraints = { @UniqueConstraint(columnNames = {"video_id", "viewer_id"}) }
-)
+@Table ( name = "VIDEO_VIEW" )
 public class VideoView {
     @Id
     @GeneratedValue (strategy = GenerationType.IDENTITY)

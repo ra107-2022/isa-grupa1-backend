@@ -201,4 +201,15 @@ public class VideoMetadataService implements IVideoMetadataService {
                 .limit(count)
                 .collect(Collectors.toList());
     }
+
+    @Override
+    public Optional<VideoMetadata> addView(Long metadataId) {
+        Optional<VideoMetadata> metadataOpt = videoMetadataRepository.findById(metadataId);
+        if (metadataOpt.isEmpty()) {
+            return Optional.empty();
+        }
+        VideoMetadata metadata = metadataOpt.get();
+        metadata.setGuestViews(metadata.getGuestViews() + 1);
+        return Optional.of(videoMetadataRepository.save(metadata));
+    }
 }

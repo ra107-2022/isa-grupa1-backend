@@ -4,16 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="c47695f5-7d45-4a51-99cd-b04b5a3252d9" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/jutjubic/src/main/java/grupa1/jutjubic/dto/AllOfVideoInfo.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/jutjubic/src/main/resources/data.sql" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/jutjubic/src/main/java/grupa1/jutjubic/config/WebConfig.java" beforeDir="false" afterPath="$PROJECT_DIR$/jutjubic/src/main/java/grupa1/jutjubic/config/WebConfig.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/jutjubic/src/main/java/grupa1/jutjubic/config/WebSecurityConfig.java" beforeDir="false" afterPath="$PROJECT_DIR$/jutjubic/src/main/java/grupa1/jutjubic/config/WebSecurityConfig.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/jutjubic/src/main/java/grupa1/jutjubic/controller/VideoController.java" beforeDir="false" afterPath="$PROJECT_DIR$/jutjubic/src/main/java/grupa1/jutjubic/controller/VideoController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/jutjubic/src/main/java/grupa1/jutjubic/service/impl/VideoMetadataService.java" beforeDir="false" afterPath="$PROJECT_DIR$/jutjubic/src/main/java/grupa1/jutjubic/service/impl/VideoMetadataService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/jutjubic/src/main/resources/application.properties" beforeDir="false" afterPath="$PROJECT_DIR$/jutjubic/src/main/resources/application.properties" afterDir="false" />
-    </list>
+    <list default="true" id="c47695f5-7d45-4a51-99cd-b04b5a3252d9" name="Changes" comment="" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -60,7 +51,7 @@
     "RunOnceActivity.git.unshallow": "true",
     "RunOnceActivity.typescript.service.memoryLimit.init": "true",
     "Shell Script.mvnw.executor": "Run",
-    "git-widget-placeholder": "Rebasing feat/video__player",
+    "git-widget-placeholder": "feat/views",
     "kotlin-language-version-configured": "true",
     "last_opened_file_path": "/home/filip/programming/java/isa_proj/isa-grupa1-backend",
     "nodejs_package_manager_path": "npm",

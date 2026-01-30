@@ -3,6 +3,8 @@ package grupa1.jutjubic.controller;
 import grupa1.jutjubic.dto.AllOfVideoInfo;
 import grupa1.jutjubic.dto.UploadRequest;
 import grupa1.jutjubic.dto.VideoInfo;
+import grupa1.jutjubic.dto.ViewData;
+import grupa1.jutjubic.model.User;
 import grupa1.jutjubic.model.VideoMetadata;
 import grupa1.jutjubic.model.VideoView;
 import grupa1.jutjubic.service.IVideoMetadataService;
@@ -20,6 +22,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.security.Principal;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -82,9 +85,7 @@ public class VideoController {
             @PathVariable Long id,
             @RequestHeader HttpHeaders headers
             ) {
-        System.out.println("Trying to stream: " + id.toString());
         Optional<Resource> opt = videoService.loadVideoAsResource(id);
-        System.out.println("here1");
         if (opt.isEmpty()) { return ResponseEntity.notFound().build(); }
 
         Resource video = opt.get();
@@ -95,7 +96,6 @@ public class VideoController {
             System.out.println(e);
             return ResponseEntity.notFound().build();
         }
-        System.out.println("here2");
 
         HttpRange range = headers.getRange().stream().findFirst().orElse(null);
         if (range != null) {
@@ -135,7 +135,7 @@ public class VideoController {
                         .findById(id)
                         .map(metadata -> ResponseEntity
                                 .ok()
-                                .body(new VideoInfo(metadata.getVideoTitle(), viewCount, metadata.getUser().getUsername())))
+                                .body(new VideoInfo(metadata.getVideoTitle(), viewCount + metadata.getGuestViews(), metadata.getUser().getUsername())))
                         .orElseGet(() -> ResponseEntity
                                 .notFound()
                                 .build()))
@@ -182,9 +182,43 @@ public class VideoController {
                     metadata.getDescription(),
                     tags,
                     metadata.getUploadDate(),
-                    viewOpt.get(),
+                    viewOpt.get() + metadata.getGuestViews(),
                     0L,
                     0L
                 ));
+    }
+
+    @PutMapping("/{id}/view_by_user")
+    @PreAuthorize("hasRole('USER')")
+    public ResponseEntity<Object> addViewByUser(
+            Principal user,
+            @PathVariable Long id
+        ) {
+        Long userId;
+        try {
+            userId = userService.findByUsername(user.getName()).getId();
+        } catch (Exception e) {
+            System.out.println("here1");
+            return ResponseEntity.notFound().build();
+        }
+        if (videoService.findById(id).isEmpty()) {
+            System.out.println("here2");
+            return ResponseEntity.notFound().build();
+        }
+        return viewService
+                .save(new ViewData(id, userId))
+                .map(view -> ResponseEntity.ok().build())
+                .orElseGet(() -> ResponseEntity.internalServerError().build());
+    }
+
+    @PutMapping("/{id}/view")
+    public ResponseEntity<Object> addView(
+            @PathVariable Long id
+        ) {
+        System.out.println("should add for " + id.toString());
+        return videoService
+                .addView(id)
+                .map(view -> ResponseEntity.ok().build())
+                .orElseGet(() -> ResponseEntity.internalServerError().build());
     }
 }
