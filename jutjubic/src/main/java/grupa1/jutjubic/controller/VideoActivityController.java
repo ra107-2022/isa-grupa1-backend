@@ -27,8 +27,15 @@ public class VideoActivityController {
                                     @RequestParam double lon,
                                     @RequestParam double lat,
                                     Principal user) {
-        Long userId = userService.findByUsername(user.getName()).getId();
-        activityService.logActivity(videoId, userId, type, lon, lat);
+        if (user != null)
+        {
+            Long userId = userService.findByUsername(user.getName()).getId();
+            activityService.logActivity(videoId, userId, type, lon, lat);
+        }
+        else
+        {
+            activityService.logActivity(videoId, null, type, lon, lat);
+        }
         return ResponseEntity.ok().build();
     }
 

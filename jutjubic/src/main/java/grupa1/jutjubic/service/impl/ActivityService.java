@@ -37,10 +37,12 @@ public class ActivityService implements IActivityService {
         ActivityLog log = new ActivityLog();
 
         VideoMetadata videoProxy = videoRepository.getReferenceById(videoId);
-        User userProxy = userRepository.getReferenceById(userId);
+        if (userId != null) {
+            User userProxy = userRepository.getReferenceById(userId);
+            log.setUser(userProxy);
+        }
 
         log.setVideo(videoProxy);
-        log.setUser(userProxy);
         log.setActivityType(type);
         log.setLocation(geometryFactory.createPoint(new Coordinate(lon, lat)));
 

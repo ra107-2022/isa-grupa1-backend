@@ -1,6 +1,7 @@
 package grupa1.jutjubic.model;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -8,6 +9,7 @@ import java.time.LocalDateTime;
 
 @Setter
 @Getter
+@AllArgsConstructor
 @Entity
 @Table (
         name="VIDEO_METADATA",
@@ -77,5 +79,22 @@ public class VideoMetadata {
         this.thumbnailOriginalFileName = thumbnailOriginalFileName;
         this.lat = lat;
         this.lon = lon;
+    }
+
+    public VideoMetadata(VideoMetadata metadata) {
+        this.user = metadata.user;
+        this.uploadDate = metadata.uploadDate;
+        this.videoTitle = metadata.videoTitle;
+        this.description = metadata.description;
+        this.tags = metadata.tags;
+        this.videoFileName = metadata.videoFileName;
+        this.videoSize = metadata.videoSize;
+        this.videoOriginalFileName = metadata.videoOriginalFileName;
+        this.thumbnailFileName = metadata.thumbnailFileName;
+        this.thumbnailSize = metadata.thumbnailSize;
+        this.thumbnailOriginalFileName = metadata.thumbnailOriginalFileName;
+        this.lat = metadata.lat;
+        this.lon = metadata.lon;
+        this.guestViews = metadata.guestViews;
     }
 }
