@@ -58,6 +58,9 @@ public class VideoMetadata {
     @Column (name = "longitude", nullable = true)
     private Long lon;
 
+    @Column (name = "guest_views", nullable = false)
+    private Long guestViews = 0L;
+
     public VideoMetadata() { super(); }
     public VideoMetadata(User user, LocalDateTime uploadDate, String videoTitle, String description, String tags, String videoFileName, Long videoSize, String videoOriginalFileName, String thumbnailFileName, Long thumbnailSize, String thumbnailOriginalFileName, Long lat, Long lon) {
         super();
