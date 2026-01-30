@@ -11,9 +11,7 @@ import java.time.LocalDateTime;
 @Repository
 public interface CommentRepository extends JpaRepository<Comment, Long> {
 
-    // Paginacija i sortiranje, najnoviji komentari prvi
     Page<Comment> findByVideoIdOrderByCreatedAtDesc(Long videoId, Pageable pageable);
 
-    // Rate-limit
     long countByAuthorIdAndCreatedAtAfter(Long authorId, LocalDateTime from);
 }
