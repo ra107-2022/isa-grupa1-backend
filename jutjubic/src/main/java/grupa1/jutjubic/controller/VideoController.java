@@ -6,6 +6,7 @@ import grupa1.jutjubic.model.VideoMetadata;
 import grupa1.jutjubic.model.VideoView;
 import grupa1.jutjubic.service.IVideoMetadataService;
 import grupa1.jutjubic.service.IViewService;
+import grupa1.jutjubic.service.impl.ActivityService;
 import grupa1.jutjubic.service.impl.UserService;
 import grupa1.jutjubic.service.impl.VideoMetadataService;
 import grupa1.jutjubic.service.impl.ViewService;
@@ -34,6 +35,9 @@ public class VideoController {
 
     @Autowired
     private ViewService viewService;
+
+    @Autowired
+    private ActivityService activityService;
 
     @PostMapping("/upload")
     @PreAuthorize("hasRole('USER')")

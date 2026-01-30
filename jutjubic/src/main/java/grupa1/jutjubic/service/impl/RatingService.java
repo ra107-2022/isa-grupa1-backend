@@ -6,6 +6,7 @@ import grupa1.jutjubic.model.Rating;
 import grupa1.jutjubic.model.VideoMetadata;
 import grupa1.jutjubic.model.enums.RatingType;
 import grupa1.jutjubic.repository.RatingRepository;
+import grupa1.jutjubic.service.IActivityService;
 import grupa1.jutjubic.service.IRatingService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -21,6 +22,9 @@ public class RatingService implements IRatingService {
 
     @Autowired
     private VideoMetadataService videoMetadataService;
+
+    @Autowired
+    private IActivityService activityService;
 
     @Autowired
     private UserService userService;
@@ -56,10 +60,12 @@ public class RatingService implements IRatingService {
             if (existing.getRatingType() == RatingType.LIKE)
             {
                 existing.setRatingType(RatingType.NONE);
+                activityService.removeLike(userId, videoId);
             }
             else if (existing.getRatingType() == RatingType.DISLIKE)
             {
                 existing.setRatingType(RatingType.LIKE);
+                activityService.removeDislike(userId, videoId);
             }
             else
             {
@@ -86,10 +92,12 @@ public class RatingService implements IRatingService {
             if (existing.getRatingType() == RatingType.LIKE)
             {
                 existing.setRatingType(RatingType.DISLIKE);
+                activityService.removeLike(userId, videoId);
             }
             else if (existing.getRatingType() == RatingType.DISLIKE)
             {
                 existing.setRatingType(RatingType.NONE);
+                activityService.removeDislike(userId, videoId);
             }
             else
             {
