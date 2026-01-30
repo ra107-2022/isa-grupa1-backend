@@ -8,6 +8,7 @@ import grupa1.jutjubic.repository.UserRepository;
 import grupa1.jutjubic.repository.VideoMetadataRepository;
 import grupa1.jutjubic.repository.VideoViewRepository;
 import grupa1.jutjubic.service.IViewService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -17,14 +18,19 @@ import java.util.stream.Collectors;
 
 @Service
 public class ViewService implements IViewService {
+    @Autowired
     private UserRepository userRepository;
+
+    @Autowired
     private VideoMetadataRepository videoRepository;
+
+    @Autowired
     private VideoViewRepository viewRepository;
 
     @Override
     public Optional<Long> getViewCount(Long videoId) {
         long ret = (long) viewRepository.findAllByVideoMetadata_Id(videoId).size();
-        if (ret > 0) {
+        if (ret >= 0) {
             return Optional.of(ret);
         } else {
             return Optional.empty();

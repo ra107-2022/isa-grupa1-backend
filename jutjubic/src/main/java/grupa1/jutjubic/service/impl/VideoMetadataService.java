@@ -103,7 +103,7 @@ public class VideoMetadataService implements IVideoMetadataService {
                 .getThumbnail()
                 .getName()
                 .replaceAll("[^a-zA-Z0-9.\\-]", "_");
-        Path thumbnailPath = Paths.get(thumbnailDir).resolve(videoFileName);
+        Path thumbnailPath = Paths.get(thumbnailDir).resolve(thumbnailFileName);
         try {
             if (Files.exists(thumbnailPath)) {
                 Files.delete(videoPath);
