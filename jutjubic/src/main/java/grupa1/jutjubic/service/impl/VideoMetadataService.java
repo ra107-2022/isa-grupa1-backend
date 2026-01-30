@@ -89,7 +89,7 @@ public class VideoMetadataService implements IVideoMetadataService {
                  .getVideo()
                  .getName()
                  .replaceAll("[^a-zA-Z0-9.\\-]", "_");
-         Path videoPath = Paths.get(videoDir).resolve(videoFileName);
+         Path videoPath = Paths.get(videoDir).resolve(videoFileName + ".mp4");
          try {
              if (Files.exists(videoPath)) {
                  return Optional.empty();
@@ -103,7 +103,7 @@ public class VideoMetadataService implements IVideoMetadataService {
                 .getThumbnail()
                 .getName()
                 .replaceAll("[^a-zA-Z0-9.\\-]", "_");
-        Path thumbnailPath = Paths.get(thumbnailDir).resolve(videoFileName);
+        Path thumbnailPath = Paths.get(thumbnailDir).resolve(thumbnailFileName + ".jpg");
         try {
             if (Files.exists(thumbnailPath)) {
                 Files.delete(videoPath);
@@ -137,7 +137,7 @@ public class VideoMetadataService implements IVideoMetadataService {
                  uploadRequest.getThumbnail().getName(),
                  uploadRequest.getLat(),
                  uploadRequest.getLon()
-         )));
+        )));
     }
 
     @Override

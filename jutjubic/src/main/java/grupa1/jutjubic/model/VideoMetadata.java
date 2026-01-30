@@ -52,10 +52,10 @@ public class VideoMetadata {
     @Column (name = "thumbnail_og_file_name")
     private String thumbnailOriginalFileName;
 
-    @Column (name = "latitude", nullable = false)
+    @Column (name = "latitude", nullable = true)
     private Long lat;
 
-    @Column (name = "longitude", nullable = false)
+    @Column (name = "longitude", nullable = true)
     private Long lon;
 
     public VideoMetadata() { super(); }

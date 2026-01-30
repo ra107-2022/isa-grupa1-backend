@@ -46,11 +46,8 @@ public class VideoController {
             @RequestParam("tags") List<String> tags
         ) {
         final Long ownerId = userService.findByUsername(user.getName()).getId();
-        Optional<VideoMetadata> opt = videoService.save(new UploadRequest(
-               ownerId , title, description, tags, videoFile, thumbnailFile, lat, lon
-        ));
-        System.out.println(ownerId.toString());
-        return opt
+        return videoService
+                .save(new UploadRequest(ownerId , title, description, tags, videoFile, thumbnailFile, lat, lon))
                 .map(ResponseEntity::ok)
                 .orElseGet(() -> ResponseEntity
                         .status(HttpStatus.INTERNAL_SERVER_ERROR)

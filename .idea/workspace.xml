@@ -4,11 +4,25 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="c47695f5-7d45-4a51-99cd-b04b5a3252d9" name="Changes" comment="" />
+    <list default="true" id="c47695f5-7d45-4a51-99cd-b04b5a3252d9" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/jutjubic/src/main/java/grupa1/jutjubic/config/WebConfig.java" beforeDir="false" afterPath="$PROJECT_DIR$/jutjubic/src/main/java/grupa1/jutjubic/config/WebConfig.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/jutjubic/src/main/java/grupa1/jutjubic/controller/VideoController.java" beforeDir="false" afterPath="$PROJECT_DIR$/jutjubic/src/main/java/grupa1/jutjubic/controller/VideoController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/jutjubic/src/main/java/grupa1/jutjubic/model/VideoMetadata.java" beforeDir="false" afterPath="$PROJECT_DIR$/jutjubic/src/main/java/grupa1/jutjubic/model/VideoMetadata.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/jutjubic/src/main/java/grupa1/jutjubic/service/impl/VideoMetadataService.java" beforeDir="false" afterPath="$PROJECT_DIR$/jutjubic/src/main/java/grupa1/jutjubic/service/impl/VideoMetadataService.java" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Interface" />
+        <option value="Class" />
+      </list>
+    </option>
   </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
@@ -24,6 +38,9 @@
   &quot;associatedIndex&quot;: 7
 }</component>
   <component name="ProjectId" id="38cJhgAuniqUrJL8qiLFKlPSUWz" />
+  <component name="ProjectLevelVcsManager">
+    <ConfirmationsSetting value="2" id="Add" />
+  </component>
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
@@ -32,11 +49,15 @@
   "keyToString": {
     "ModuleVcsDetector.initialDetectionPerformed": "true",
     "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252": "true",
     "RunOnceActivity.git.unshallow": "true",
     "RunOnceActivity.typescript.service.memoryLimit.init": "true",
-    "git-widget-placeholder": "feat/auth",
+    "Shell Script.mvnw.executor": "Run",
+    "git-widget-placeholder": "main",
     "kotlin-language-version-configured": "true",
+    "last_opened_file_path": "/home/filip/programming/java/isa_proj/isa-grupa1-backend",
     "nodejs_package_manager_path": "npm",
+    "settings.editor.selected.configurable": "preferences.pluginManager",
     "vue.rearranger.settings.migration": "true"
   }
 }]]></component>
@@ -71,5 +92,16 @@
   </component>
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="3" />
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
   </component>
 </project>
