@@ -103,7 +103,7 @@ public class VideoController {
                 .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
-    @GetMapping("/videos/get_page")
+    @GetMapping("/get_page")
     public ResponseEntity<List<Long>> getPage(
             @RequestParam("start") Long start,
             @RequestParam("count") Long count
