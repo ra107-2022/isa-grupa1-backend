@@ -14,5 +14,6 @@ public class WebConfig implements WebMvcConfigurer {
                 .allowCredentials(true)
                 .allowedHeaders("*")
                 .exposedHeaders("Content-Type", "Content-Length", "Content-Disposition");
+
     }
 }
