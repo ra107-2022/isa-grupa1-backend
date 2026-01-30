@@ -89,7 +89,8 @@ public class VideoMetadataService implements IVideoMetadataService {
                  .getVideo()
                  .getName()
                  .replaceAll("[^a-zA-Z0-9.\\-]", "_");
-         Path videoPath = Paths.get(videoDir).resolve(videoFileName + ".mp4");
+         videoFileName += ".mp4";
+         Path videoPath = Paths.get(videoDir).resolve(videoFileName);
          try {
              if (Files.exists(videoPath)) {
                  return Optional.empty();
@@ -99,45 +100,46 @@ public class VideoMetadataService implements IVideoMetadataService {
              return Optional.empty();
          }
 
-        String thumbnailFileName = UUID.randomUUID() + "_" + uploadRequest
+         String thumbnailFileName = UUID.randomUUID() + "_" + uploadRequest
                 .getThumbnail()
                 .getName()
                 .replaceAll("[^a-zA-Z0-9.\\-]", "_");
-        Path thumbnailPath = Paths.get(thumbnailDir).resolve(thumbnailFileName + ".jpg");
-        try {
-            if (Files.exists(thumbnailPath)) {
-                Files.delete(videoPath);
-                return Optional.empty();
-            }
-            Files.copy(uploadRequest.getThumbnail().getInputStream(), thumbnailPath, StandardCopyOption.REPLACE_EXISTING);
-        } catch (Exception e1) {
-            try {
-                Files.delete(videoPath);
-            } catch (Exception e2) { return Optional.empty(); }
-            return Optional.empty();
-        }
+         thumbnailFileName += ".jpg";
+         Path thumbnailPath = Paths.get(thumbnailDir).resolve(thumbnailFileName);
+         try {
+             if (Files.exists(thumbnailPath)) {
+                 Files.delete(videoPath);
+                 return Optional.empty();
+             }
+             Files.copy(uploadRequest.getThumbnail().getInputStream(), thumbnailPath, StandardCopyOption.REPLACE_EXISTING);
+         } catch (Exception e1) {
+             try {
+                 Files.delete(videoPath);
+             } catch (Exception e2) { return Optional.empty(); }
+             return Optional.empty();
+         }
 
-        String tags = uploadRequest
-                .getTags()
-                .stream()
-                .map((tag) -> tag.replaceAll("\\|", "_"))
-                .reduce("", (acc, tag) -> acc + "|" + tag);
+         String tags = uploadRequest
+                 .getTags()
+                 .stream()
+                 .map((tag) -> tag.replaceAll("\\|", "_"))
+                 .reduce("", (acc, tag) -> acc + "|" + tag);
 
-        return Optional.of(videoMetadataRepository.save(new VideoMetadata(
-                 user_opt.get(),
-                 LocalDateTime.now(),
-                 uploadRequest.getTitle(),
-                 uploadRequest.getDescription(),
-                 tags,
-                 videoFileName,
-                 uploadRequest.getVideo().getSize(),
-                 uploadRequest.getVideo().getName(),
-                 thumbnailFileName,
-                 uploadRequest.getThumbnail().getSize(),
-                 uploadRequest.getThumbnail().getName(),
-                 uploadRequest.getLat(),
-                 uploadRequest.getLon()
-        )));
+         return Optional.of(videoMetadataRepository.save(new VideoMetadata(
+                  user_opt.get(),
+                  LocalDateTime.now(),
+                  uploadRequest.getTitle(),
+                  uploadRequest.getDescription(),
+                  tags,
+                  videoFileName,
+                  uploadRequest.getVideo().getSize(),
+                  uploadRequest.getVideo().getName(),
+                  thumbnailFileName,
+                  uploadRequest.getThumbnail().getSize(),
+                  uploadRequest.getThumbnail().getName(),
+                  uploadRequest.getLat(),
+                  uploadRequest.getLon()
+         )));
     }
 
     @Override
@@ -161,14 +163,18 @@ public class VideoMetadataService implements IVideoMetadataService {
 
     @Override
     public Optional<Resource> loadThumbnailAsResource(Long id) {
+        System.out.println("Looking for: " + id.toString());
         Optional<VideoMetadata> metadataOpt = videoMetadataRepository.findById(id);
         if (metadataOpt.isEmpty()) { return Optional.empty(); }
         VideoMetadata metadata = metadataOpt.get();
+        System.out.println("Found: " + metadata.toString());
 
         Path filePath = getFilePath(metadata, false);
+        System.out.println("FilePath: " + filePath);
         try {
             Resource res = new UrlResource(filePath.toUri());
             if (res.isReadable() && res.exists()) {
+                System.out.println(res.toString());
                 return Optional.of(res);
             } else {
                 return Optional.empty();

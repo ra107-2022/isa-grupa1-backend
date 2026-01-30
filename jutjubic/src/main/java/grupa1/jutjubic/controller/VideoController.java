@@ -1,5 +1,6 @@
 package grupa1.jutjubic.controller;
 
+import grupa1.jutjubic.dto.AllOfVideoInfo;
 import grupa1.jutjubic.dto.UploadRequest;
 import grupa1.jutjubic.dto.VideoInfo;
 import grupa1.jutjubic.model.VideoMetadata;
@@ -12,14 +13,15 @@ import grupa1.jutjubic.service.impl.VideoMetadataService;
 import grupa1.jutjubic.service.impl.ViewService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
+import org.springframework.core.io.support.ResourceRegion;
+import org.springframework.http.*;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.security.Principal;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -76,18 +78,52 @@ public class VideoController {
     }
 
     @GetMapping("/{id}/video")
-    public ResponseEntity<Resource> getVideo(
-            @PathVariable Long id
-        ) {
+    public ResponseEntity<ResourceRegion> getVideo(
+            @PathVariable Long id,
+            @RequestHeader HttpHeaders headers
+            ) {
+        System.out.println("Trying to stream: " + id.toString());
         Optional<Resource> opt = videoService.loadVideoAsResource(id);
-        return opt
-                .map(value -> ResponseEntity
-                        .ok()
-                        .contentType(MediaType.parseMediaType("video/mp4"))
-                        .body(value))
-                .orElseGet(() -> ResponseEntity
-                        .notFound()
-                        .build());
+        System.out.println("here1");
+        if (opt.isEmpty()) { return ResponseEntity.notFound().build(); }
+
+        Resource video = opt.get();
+        long contentLen;
+        try {
+            contentLen = video.contentLength();
+        } catch (Exception e) {
+            System.out.println(e);
+            return ResponseEntity.notFound().build();
+        }
+        System.out.println("here2");
+
+        HttpRange range = headers.getRange().stream().findFirst().orElse(null);
+        if (range != null) {
+            long start = range.getRangeStart(contentLen);
+            long end = range.getRangeEnd(contentLen);
+            long rangeLen = Math.min(1024 * 1024, end - start + 1);
+
+            ResourceRegion res = new ResourceRegion(video, start, rangeLen);
+            ResponseEntity<ResourceRegion> ret = ResponseEntity
+                    .status(HttpStatus.PARTIAL_CONTENT)
+                    .contentType(MediaType.parseMediaType("video/mp4"))
+                    .header(HttpHeaders.ACCEPT_RANGES, "bytes")
+                    .header(
+                            HttpHeaders.CONTENT_RANGE,
+                            "bytes " + start + "-" + (start + rangeLen - 1) + "/" + contentLen)
+                    .contentLength(contentLen)
+                    .body(res);
+            System.out.println(ret.toString());
+            return ret;
+        } else {
+            ResourceRegion res = new ResourceRegion(video, 0, contentLen);
+            return ResponseEntity
+                    .ok()
+                    .contentType(MediaType.parseMediaType("video/mp4"))
+                    .header(HttpHeaders.ACCEPT_RANGES, "bytes")
+                    .contentLength(contentLen)
+                    .body(res);
+        }
     }
 
     @GetMapping("/{id}/video_info")
@@ -112,5 +148,43 @@ public class VideoController {
             @RequestParam("count") Long count
         ) {
         return ResponseEntity.ok().body(videoService.getPage(start, count));
+    }
+
+    @GetMapping("/{id}/all_video_info")
+    public ResponseEntity<AllOfVideoInfo> getAllOfVideoInfo(
+            @PathVariable Long id
+        ) {
+        Optional<Long> viewOpt = viewService.getViewCount(id);
+        if (viewOpt.isEmpty()) { return ResponseEntity.notFound().build(); }
+
+        Optional<VideoMetadata> metadataOpt = videoService.findById(id);
+        if (metadataOpt.isEmpty()) { return ResponseEntity.notFound().build(); }
+
+        VideoMetadata metadata = metadataOpt.get();
+        String tagStr = metadata.getTags();
+
+        List<String> tags = new ArrayList<String>();
+        for (int i = 0; i < tagStr.length(); ++i) {
+            if (tagStr.charAt(i) == '|') {
+                tags.add("");
+            } else {
+                tags.set(tags.size() - 1, tags.getLast() + tagStr.charAt(i));
+            }
+        }
+        tags.removeIf(String::isEmpty);
+
+        return ResponseEntity
+                .ok()
+                .body(new AllOfVideoInfo(
+                    metadata.getUser().getId(),
+                    metadata.getUser().getUsername(),
+                    metadata.getVideoTitle(),
+                    metadata.getDescription(),
+                    tags,
+                    metadata.getUploadDate(),
+                    viewOpt.get(),
+                    0L,
+                    0L
+                ));
     }
 }
