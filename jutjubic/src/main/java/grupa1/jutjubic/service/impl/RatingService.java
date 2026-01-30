@@ -118,7 +118,7 @@ public class RatingService implements IRatingService {
             {
                 ratingsCount.setLikes(ratingsCount.getLikes() + 1);
             }
-            else
+            else if (rating.getRatingType() == RatingType.DISLIKE)
             {
                 ratingsCount.setDislikes(ratingsCount.getDislikes() + 1);
             }
