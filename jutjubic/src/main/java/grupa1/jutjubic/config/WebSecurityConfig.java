@@ -65,10 +65,11 @@ public class WebSecurityConfig {
                 .requestMatchers(HttpMethod.PUT, "/api/videos/*/view_by_user").authenticated()
                 .requestMatchers(HttpMethod.GET, "/api/users/**").permitAll()
                 .requestMatchers(HttpMethod.GET, "/api/videos/**").permitAll()
+                .requestMatchers(HttpMethod.POST, "/api/videos/*/log").permitAll()
                 .requestMatchers(HttpMethod.GET, "/api/comments/**").permitAll()
+                .requestMatchers(HttpMethod.GET, "/api/ratings/**").permitAll()
 
                 .requestMatchers("/h2-console/**").permitAll()
-                .requestMatchers("/api/ratings/**").permitAll()
                 .requestMatchers(
                         "/favicon.ico",
                         "/webjars/**",
