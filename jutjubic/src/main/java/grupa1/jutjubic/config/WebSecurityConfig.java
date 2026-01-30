@@ -62,6 +62,7 @@ public class WebSecurityConfig {
                 .requestMatchers("/api/auth/**").permitAll()
 
                 .requestMatchers(HttpMethod.GET, "/api/users/**").permitAll()
+                .requestMatchers("/api/users/me/**").authenticated()
                 .requestMatchers(HttpMethod.GET, "/api/videos/**").permitAll()
                 .requestMatchers(HttpMethod.GET, "/api/comments/**").permitAll()
 
