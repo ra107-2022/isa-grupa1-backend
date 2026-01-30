@@ -60,9 +60,12 @@ public class WebSecurityConfig {
                 .authenticationEntryPoint(restAuthenticationEntryPoint));
         http.authorizeHttpRequests(auth -> auth
                 .requestMatchers("/api/auth/**").permitAll()
+
                 .requestMatchers(HttpMethod.GET, "/api/users/**").permitAll()
+                .requestMatchers(HttpMethod.GET, "/api/videos/**").permitAll()
+                .requestMatchers(HttpMethod.GET, "/api/comments/**").permitAll()
+
                 .requestMatchers("/h2-console/**").permitAll()
-                .requestMatchers("/api/videos/**").permitAll()
                 .requestMatchers("/api/ratings/**").permitAll()
                 .requestMatchers(
                         "/favicon.ico",
