@@ -1,5 +1,6 @@
 package grupa1.jutjubic.controller;
 
+import grupa1.jutjubic.dto.PerformanceDataPoint;
 import grupa1.jutjubic.dto.PerformanceStats;
 import grupa1.jutjubic.model.enums.ActivityType;
 import grupa1.jutjubic.service.IActivityService;
@@ -7,11 +8,13 @@ import grupa1.jutjubic.service.IPerformanceService;
 import grupa1.jutjubic.service.IUserService;
 import grupa1.jutjubic.service.impl.ActivityService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @RestController
@@ -60,5 +63,18 @@ public class VideoActivityController {
                 .getRealTimeStats(endpoint)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
+    }
+
+    @GetMapping("/performance/graph")
+    public ResponseEntity<List<PerformanceDataPoint>> getPerformanceGraph(
+            @RequestParam(defaultValue = "getTrendingVideos") String endpoint,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime start,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime end,
+            @RequestParam(defaultValue = "HOUR") String groupBy
+    ) {
+        if (start == null) { start = LocalDateTime.now().minusDays(1); }
+        if (end == null) { end = LocalDateTime.now(); }
+        List<PerformanceDataPoint> data = performanceService.getPerformanceGraph(endpoint, start, end, groupBy);
+        return ResponseEntity.ok(data);
     }
 }

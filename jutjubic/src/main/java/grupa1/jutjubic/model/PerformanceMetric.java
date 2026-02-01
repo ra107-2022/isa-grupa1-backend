@@ -9,7 +9,7 @@ import java.time.LocalDateTime;
 @Setter
 @Getter
 @Entity
-@Table(name = "PERFORMANCE")
+@Table(name = "PERFORMANCE_METRICS")
 public class PerformanceMetric {
     @Id
     @GeneratedValue (strategy = GenerationType.IDENTITY)

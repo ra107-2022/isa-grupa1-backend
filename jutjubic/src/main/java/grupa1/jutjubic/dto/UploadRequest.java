@@ -16,8 +16,8 @@ public class UploadRequest {
     private List<String> tags;
     private MultipartFile video;
     private MultipartFile thumbnail;
-    private Long lat;
-    private Long lon;
+    private Double lat;
+    private Double lon;
 
     public UploadRequest() { super(); }
     public UploadRequest(Long ownerId, String title, String description, List<String> tags, MultipartFile videoFile, MultipartFile thumbnailFile) {
@@ -27,10 +27,10 @@ public class UploadRequest {
         this.tags = tags;
         this.video = videoFile;
         this.thumbnail = thumbnailFile;
-        this.lat = 0L;
-        this.lon = 0L;
+        this.lat = 0.0;
+        this.lon = 0.0;
     }
-    public UploadRequest(Long ownerId, String title, String description, List<String> tags, MultipartFile videoFile, MultipartFile thumbnailFile, Long lat, Long lon) {
+    public UploadRequest(Long ownerId, String title, String description, List<String> tags, MultipartFile videoFile, MultipartFile thumbnailFile, Double lat, Double lon) {
         this.ownerId = ownerId;
         this.title = title;
         this.description = description;

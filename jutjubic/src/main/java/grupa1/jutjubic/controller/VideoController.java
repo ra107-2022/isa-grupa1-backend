@@ -52,8 +52,8 @@ public class VideoController {
             @RequestParam("video") MultipartFile videoFile,
             @RequestParam("thumbnail") MultipartFile thumbnailFile,
             @RequestParam("description") String description,
-            @RequestParam(name = "latitude", required = false) Long lat,
-            @RequestParam(name = "longitude", required = false) Long lon,
+            @RequestParam(name = "latitude", required = false) Double lat,
+            @RequestParam(name = "longitude", required = false) Double lon,
             @RequestParam("tags") List<String> tags
         ) {
         final Long ownerId = userService.findByUsername(user.getName()).getId();

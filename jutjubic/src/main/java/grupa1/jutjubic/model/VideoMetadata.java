@@ -55,16 +55,16 @@ public class VideoMetadata {
     private String thumbnailOriginalFileName;
 
     @Column (name = "latitude", nullable = true)
-    private Long lat;
+    private Double lat;
 
     @Column (name = "longitude", nullable = true)
-    private Long lon;
+    private Double lon;
 
     @Column (name = "guest_views", nullable = false)
     private Long guestViews = 0L;
 
     public VideoMetadata() { super(); }
-    public VideoMetadata(User user, LocalDateTime uploadDate, String videoTitle, String description, String tags, String videoFileName, Long videoSize, String videoOriginalFileName, String thumbnailFileName, Long thumbnailSize, String thumbnailOriginalFileName, Long lat, Long lon) {
+    public VideoMetadata(User user, LocalDateTime uploadDate, String videoTitle, String description, String tags, String videoFileName, Long videoSize, String videoOriginalFileName, String thumbnailFileName, Long thumbnailSize, String thumbnailOriginalFileName, Double lat, Double lon) {
         super();
         this.user = user;
         this.uploadDate = uploadDate;
