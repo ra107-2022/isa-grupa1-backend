@@ -14,7 +14,10 @@ import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
+
 import java.time.LocalDateTime;
 
 @Service
@@ -49,10 +52,16 @@ public class CommentService implements ICommentService {
         VideoMetadata video = videoRepository.findById(videoId)
                 .orElseThrow(()->new RuntimeException("Video not found."));
 
-        long commentCount = commentRepository.countByAuthorIdAndCreatedAtAfter(userId, LocalDateTime.now().minusHours(1));
+        LocalDateTime now = LocalDateTime.now();
 
-        if (commentCount >= MAX_COMMENTS_PER_HOUR){
-            throw new RuntimeException("You have reached the limit of 60 comments per hour.");
+        long commentCount = commentRepository.countByAuthorIdAndCreatedAtAfter
+                (userId, now.minusHours(1));
+
+        if (commentCount >= MAX_COMMENTS_PER_HOUR) {
+            throw new ResponseStatusException(
+                    HttpStatus.TOO_MANY_REQUESTS,
+                    "You have reached the limit of 60 comments per hour."
+            );
         }
 
         Comment comment = new Comment(user, video, content);
