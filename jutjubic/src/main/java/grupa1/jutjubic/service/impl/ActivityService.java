@@ -1,10 +1,12 @@
 package grupa1.jutjubic.service.impl;
 
 import grupa1.jutjubic.model.ActivityLog;
+import grupa1.jutjubic.model.PerformanceMetric;
 import grupa1.jutjubic.model.User;
 import grupa1.jutjubic.model.VideoMetadata;
 import grupa1.jutjubic.model.enums.ActivityType;
 import grupa1.jutjubic.repository.ActivityLogRepository;
+import grupa1.jutjubic.repository.PerformanceMetricRepository;
 import grupa1.jutjubic.repository.UserRepository;
 import grupa1.jutjubic.repository.VideoMetadataRepository;
 import grupa1.jutjubic.service.IActivityService;
@@ -15,6 +17,7 @@ import org.locationtech.jts.geom.PrecisionModel;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -27,6 +30,9 @@ public class ActivityService implements IActivityService {
 
     @Autowired
     private VideoMetadataRepository videoRepository;
+
+    @Autowired
+    private PerformanceMetricRepository performanceRepository;
 
     private final GeometryFactory geometryFactory = new GeometryFactory(new PrecisionModel(), 4326);
 
@@ -60,6 +66,15 @@ public class ActivityService implements IActivityService {
     }
 
     public List<Long> getTrendingVideos(double lon, double lat, double radius, int limit) {
-        return activityRepository.findTopVideoIdsByLocationWithDecay(lon, lat, radius, limit);
+        long start = System.currentTimeMillis();
+        List<Long> ret = activityRepository.findTopVideoIdsByLocationWithDecay(lon, lat, radius, limit);
+        long end = System.currentTimeMillis();
+        performanceRepository.save(new PerformanceMetric(
+                end - start,
+                LocalDateTime.now(),
+                ((Integer)ret.size()).longValue(),
+                "getTrendingVideos"
+        ));
+        return ret;
     }
 }

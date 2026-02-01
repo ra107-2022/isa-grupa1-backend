@@ -1,7 +1,9 @@
 package grupa1.jutjubic.controller;
 
+import grupa1.jutjubic.dto.PerformanceStats;
 import grupa1.jutjubic.model.enums.ActivityType;
 import grupa1.jutjubic.service.IActivityService;
+import grupa1.jutjubic.service.IPerformanceService;
 import grupa1.jutjubic.service.IUserService;
 import grupa1.jutjubic.service.impl.ActivityService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,6 +22,9 @@ public class VideoActivityController {
 
     @Autowired
     private IUserService userService;
+
+    @Autowired
+    private IPerformanceService performanceService;
 
     @PostMapping("/{videoId}/log")
     public ResponseEntity<Void> log(@PathVariable Long videoId,
@@ -45,5 +50,15 @@ public class VideoActivityController {
                                   @RequestParam(defaultValue = "50000") double radius, // 50km
                                   @RequestParam(defaultValue = "10") int limit) {
         return activityService.getTrendingVideos(lon, lat, radius, limit);
+    }
+
+    @GetMapping("/performance/realtime")
+    public ResponseEntity<PerformanceStats> getRealTimeStats(
+        @RequestParam(defaultValue = "getTrendingVideos") String endpoint
+    ) {
+        return performanceService
+                .getRealTimeStats(endpoint)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
     }
 }
