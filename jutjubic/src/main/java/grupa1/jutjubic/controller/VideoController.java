@@ -1,9 +1,6 @@
 package grupa1.jutjubic.controller;
 
-import grupa1.jutjubic.dto.AllOfVideoInfo;
-import grupa1.jutjubic.dto.UploadRequest;
-import grupa1.jutjubic.dto.VideoInfo;
-import grupa1.jutjubic.dto.ViewData;
+import grupa1.jutjubic.dto.*;
 import grupa1.jutjubic.model.User;
 import grupa1.jutjubic.model.VideoMetadata;
 import grupa1.jutjubic.model.VideoView;
@@ -22,6 +19,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.security.Principal;
+import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -52,13 +50,14 @@ public class VideoController {
             @RequestParam("video") MultipartFile videoFile,
             @RequestParam("thumbnail") MultipartFile thumbnailFile,
             @RequestParam("description") String description,
+            @RequestParam(name = "premiere_date", required = false) LocalDateTime premiereDate,
             @RequestParam(name = "latitude", required = false) Double lat,
             @RequestParam(name = "longitude", required = false) Double lon,
             @RequestParam("tags") List<String> tags
         ) {
         final Long ownerId = userService.findByUsername(user.getName()).getId();
         return videoService
-                .save(new UploadRequest(ownerId , title, description, tags, videoFile, thumbnailFile, lat, lon))
+                .save(new UploadRequest(ownerId , title, description, premiereDate, tags, videoFile, thumbnailFile, lat, lon))
                 .map(ResponseEntity::ok)
                 .orElseGet(() -> ResponseEntity
                         .status(HttpStatus.INTERNAL_SERVER_ERROR)
@@ -88,6 +87,17 @@ public class VideoController {
         Optional<Resource> opt = videoService.loadVideoAsResource(id);
         if (opt.isEmpty()) { return ResponseEntity.notFound().build(); }
 
+        Optional<VideoMetadata> optMeta = videoService.findById(id);
+        if (optMeta.isEmpty()) { return ResponseEntity.notFound().build(); }
+
+        VideoMetadata metadata = optMeta.get();
+
+        LocalDateTime now = LocalDateTime.now();
+        if (metadata.getPremiereDate() != null &&
+                now.isBefore(metadata.getPremiereDate())) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
+
         Resource video = opt.get();
         long contentLen;
         try {
@@ -111,7 +121,7 @@ public class VideoController {
                     .header(
                             HttpHeaders.CONTENT_RANGE,
                             "bytes " + start + "-" + (start + rangeLen - 1) + "/" + contentLen)
-                    .contentLength(contentLen)
+                    .contentLength(rangeLen)
                     .body(res);
             System.out.println(ret.toString());
             return ret;
@@ -130,12 +140,22 @@ public class VideoController {
     public ResponseEntity<VideoInfo> getVideoInfo(
             @PathVariable Long id
         ) {
+        Optional<VideoMetadata> optMeta = videoService.findById(id);
+        if (optMeta.isEmpty()) { return ResponseEntity.notFound().build(); }
+
+        VideoMetadata data = optMeta.get();
+
+        LocalDateTime now = LocalDateTime.now();
+        LocalDateTime premiereDate = data.getPremiereDate();
+
+        final Boolean isLive = premiereDate != null && now.isAfter(premiereDate) && now.isBefore(premiereDate.plusSeconds(data.getDuration()));
+
         return viewService.getViewCount(id)
                 .map(viewCount -> videoService
                         .findById(id)
                         .map(metadata -> ResponseEntity
                                 .ok()
-                                .body(new VideoInfo(metadata.getVideoTitle(), viewCount + metadata.getGuestViews(), metadata.getUser().getUsername())))
+                                .body(new VideoInfo(metadata.getVideoTitle(), viewCount + metadata.getGuestViews(), metadata.getUser().getUsername(), isLive, metadata.getDuration(), metadata.getPremiereDate())))
                         .orElseGet(() -> ResponseEntity
                                 .notFound()
                                 .build()))
@@ -182,10 +202,54 @@ public class VideoController {
                     metadata.getDescription(),
                     tags,
                     metadata.getUploadDate(),
+                    metadata.getPremiereDate(),
                     viewOpt.get() + metadata.getGuestViews(),
                     0L,
                     0L
                 ));
+    }
+
+    @GetMapping("/{id}/streaming_info")
+    public ResponseEntity<StreamingInfo> getStreamingInfo(
+            @PathVariable Long id
+    ) {
+        Optional<VideoMetadata> optMeta = videoService.findById(id);
+        if (optMeta.isEmpty()) { return ResponseEntity.notFound().build(); }
+
+        StreamingInfo info = new StreamingInfo();
+
+        VideoMetadata metadata = optMeta.get();
+
+        LocalDateTime now = LocalDateTime.now();
+        LocalDateTime premiereDate = metadata.getPremiereDate();
+
+        if (premiereDate != null && now.isBefore(premiereDate)) {
+            info.setIsAvailable(false);
+            info.setIsLive(false);
+            return ResponseEntity.ok().body(info);
+        }
+
+        if (premiereDate != null && now.isAfter(premiereDate)) {
+            info.setIsAvailable(true);
+            if (now.isAfter(premiereDate.plusSeconds(metadata.getDuration()))) {
+                info.setIsLive(false);
+                info.setOffset(0L);
+                info.setCanSeek(true);
+                return ResponseEntity.ok().body(info);
+            }
+            info.setIsLive(true);
+            info.setCanSeek(false);
+
+            Long offset = Duration.between(premiereDate, now).toSeconds();
+
+            info.setOffset(offset);
+
+            return ResponseEntity.ok().body(info);
+        }
+
+        info.setIsAvailable(false);
+
+        return ResponseEntity.ok().body(info);
     }
 
     @PutMapping("/{id}/view_by_user")

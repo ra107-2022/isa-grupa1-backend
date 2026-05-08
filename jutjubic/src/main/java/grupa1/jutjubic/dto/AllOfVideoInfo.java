@@ -16,19 +16,21 @@ public class AllOfVideoInfo {
     private String description;
     private List<String> tags;
     private LocalDateTime publishDate;
+    private LocalDateTime premiereDate;
 
     private Long viewCount;
     private Long likeCount;
     private Long dislikeCount;
 
     public AllOfVideoInfo() {}
-    public AllOfVideoInfo(Long ownerId, String ownerUsername, String title, String description, List<String> tags, LocalDateTime publishDate, Long viewCount, Long likeCount, Long dislikeCount) {
+    public AllOfVideoInfo(Long ownerId, String ownerUsername, String title, String description, List<String> tags, LocalDateTime publishDate, LocalDateTime premiereDate, Long viewCount, Long likeCount, Long dislikeCount) {
         this.ownerId = ownerId;
         this.ownerUsername = ownerUsername;
         this.title = title;
         this.description = description;
         this.tags = tags;
         this.publishDate = publishDate;
+        this.premiereDate = premiereDate;
         this.viewCount = viewCount;
         this.likeCount = likeCount;
         this.dislikeCount = dislikeCount;
