@@ -7,12 +7,16 @@ import grupa1.jutjubic.repository.UserRepository;
 import grupa1.jutjubic.repository.VideoMetadataRepository;
 import grupa1.jutjubic.service.IVideoMetadataService;
 import jakarta.annotation.PostConstruct;
+import org.mp4parser.IsoFile;
+import org.mp4parser.boxes.iso14496.part12.MovieHeaderBox;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 import org.springframework.stereotype.Service;
 
+import java.io.File;
+import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -125,12 +129,16 @@ public class VideoMetadataService implements IVideoMetadataService {
                  .map((tag) -> tag.replaceAll("\\|", "_"))
                  .reduce("", (acc, tag) -> acc + "|" + tag);
 
+         Long duration = getDurationInSeconds(videoPath.toFile());
+
          return Optional.of(videoMetadataRepository.save(new VideoMetadata(
                   user_opt.get(),
                   LocalDateTime.now(),
+                  uploadRequest.getPremiereDate(),
                   uploadRequest.getTitle(),
                   uploadRequest.getDescription(),
                   tags,
+                  duration,
                   videoFileName,
                   uploadRequest.getVideo().getSize(),
                   uploadRequest.getVideo().getName(),
@@ -211,5 +219,18 @@ public class VideoMetadataService implements IVideoMetadataService {
         VideoMetadata metadata = metadataOpt.get();
         metadata.setGuestViews(metadata.getGuestViews() + 1);
         return Optional.of(videoMetadataRepository.save(metadata));
+    }
+
+    public long getDurationInSeconds(File videoFile) {
+        try (IsoFile isoFile = new IsoFile(videoFile)) {
+            MovieHeaderBox movieHeaderBox = isoFile.getMovieBox().getMovieHeaderBox();
+
+            long duration = movieHeaderBox.getDuration() / movieHeaderBox.getTimescale();
+
+            return duration;
+        } catch (IOException e) {
+            System.err.println("Failed to read video metadata: " + e.getMessage());
+            return 0;
+        }
     }
 }
