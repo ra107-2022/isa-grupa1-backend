@@ -27,11 +27,17 @@ public class VideoMetadata {
     @Column (name = "upload_date", nullable = false)
     private LocalDateTime uploadDate;
 
+    @Column (name = "premiere_date", nullable = true)
+    private LocalDateTime premiereDate;
+
     @Column (name = "video_title", nullable = false)
     private String videoTitle;
 
     @Column (name = "description", nullable = false)
     private String description;
+
+    @Column (name = "duration", nullable = true)
+    private Long duration;
 
     @Column (name = "tags", nullable = false)
     private String tags;
@@ -64,13 +70,15 @@ public class VideoMetadata {
     private Long guestViews = 0L;
 
     public VideoMetadata() { super(); }
-    public VideoMetadata(User user, LocalDateTime uploadDate, String videoTitle, String description, String tags, String videoFileName, Long videoSize, String videoOriginalFileName, String thumbnailFileName, Long thumbnailSize, String thumbnailOriginalFileName, Double lat, Double lon) {
+    public VideoMetadata(User user, LocalDateTime uploadDate, LocalDateTime premiereDate, String videoTitle, String description, String tags, Long duration, String videoFileName, Long videoSize, String videoOriginalFileName, String thumbnailFileName, Long thumbnailSize, String thumbnailOriginalFileName, Double lat, Double lon) {
         super();
         this.user = user;
         this.uploadDate = uploadDate;
+        this.premiereDate = premiereDate;
         this.videoTitle = videoTitle;
         this.description = description;
         this.tags = tags;
+        this.duration = duration;
         this.videoFileName = videoFileName;
         this.videoSize = videoSize;
         this.videoOriginalFileName = videoOriginalFileName;
@@ -84,9 +92,11 @@ public class VideoMetadata {
     public VideoMetadata(VideoMetadata metadata) {
         this.user = metadata.user;
         this.uploadDate = metadata.uploadDate;
+        this.premiereDate = metadata.premiereDate;
         this.videoTitle = metadata.videoTitle;
         this.description = metadata.description;
         this.tags = metadata.tags;
+        this.duration = metadata.duration;
         this.videoFileName = metadata.videoFileName;
         this.videoSize = metadata.videoSize;
         this.videoOriginalFileName = metadata.videoOriginalFileName;
