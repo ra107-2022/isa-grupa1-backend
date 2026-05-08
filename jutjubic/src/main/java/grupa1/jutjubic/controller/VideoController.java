@@ -1,15 +1,13 @@
 package grupa1.jutjubic.controller;
 
 import grupa1.jutjubic.dto.*;
+import grupa1.jutjubic.model.TrendingVideos;
 import grupa1.jutjubic.model.User;
 import grupa1.jutjubic.model.VideoMetadata;
 import grupa1.jutjubic.model.VideoView;
 import grupa1.jutjubic.service.IVideoMetadataService;
 import grupa1.jutjubic.service.IViewService;
-import grupa1.jutjubic.service.impl.ActivityService;
-import grupa1.jutjubic.service.impl.UserService;
-import grupa1.jutjubic.service.impl.VideoMetadataService;
-import grupa1.jutjubic.service.impl.ViewService;
+import grupa1.jutjubic.service.impl.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.support.ResourceRegion;
@@ -41,6 +39,9 @@ public class VideoController {
 
     @Autowired
     private ActivityService activityService;
+
+    @Autowired
+    private TrendingService trendingService;
 
     @PostMapping("/upload")
     @PreAuthorize("hasRole('USER')")
@@ -284,5 +285,12 @@ public class VideoController {
                 .addView(id)
                 .map(view -> ResponseEntity.ok().build())
                 .orElseGet(() -> ResponseEntity.internalServerError().build());
+    }
+
+    @GetMapping("/trending")
+    public ResponseEntity<TrendingVideos> getDailyTrendingVideos() {
+        return ResponseEntity
+                .ok()
+                .body(trendingService.getLatestTop3());
     }
 }
