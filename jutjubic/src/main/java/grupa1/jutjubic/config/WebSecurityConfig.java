@@ -69,6 +69,7 @@ public class WebSecurityConfig {
                 .requestMatchers(HttpMethod.POST, "/api/videos/*/log").permitAll()
                 .requestMatchers(HttpMethod.GET, "/api/comments/**").permitAll()
                 .requestMatchers(HttpMethod.GET, "/api/ratings/**").permitAll()
+                .requestMatchers("/actuator/prometheus").permitAll()
 
                 .requestMatchers("/h2-console/**").permitAll()
                 .requestMatchers(
