@@ -7,8 +7,10 @@ import grupa1.jutjubic.exception.ResourceConflictException;
 import grupa1.jutjubic.model.User;
 import grupa1.jutjubic.model.VerificationToken;
 import grupa1.jutjubic.repository.VerificationTokenRepository;
+import grupa1.jutjubic.service.impl.LoginAttemptService;
 import grupa1.jutjubic.service.impl.UserService;
 import grupa1.jutjubic.util.TokenUtils;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -32,21 +34,45 @@ public class AuthController {
     @Autowired
     private UserService userService;
 
+    @Autowired
+    private LoginAttemptService loginAttemptService;
+
     @PostMapping("/login")
-    public ResponseEntity<UserTokenState> createAuthToken(
+    public ResponseEntity<?> createAuthToken(
             @RequestBody JwtAuthRequest authRequest,
+            HttpServletRequest request,
             HttpServletResponse response) {
 
-        Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(
-                authRequest.getEmail(), authRequest.getPassword()));
+        String ipAddress = getClientIP(request);
 
-        SecurityContextHolder.getContext().setAuthentication(authentication);
+        if (!loginAttemptService.tryAttempt(ipAddress)) {
+            return ResponseEntity.status(HttpStatus.TOO_MANY_REQUESTS)
+                    .body("Too many login attempts. Please try again later.");
+        }
 
-        User user = (User)  authentication.getPrincipal();
-        String jwt = tokenUtils.createToken(user.getEmail(), user.getId());
-        int expiredIn = tokenUtils.getExpiredIn();
+        try {
+            Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(
+                    authRequest.getEmail(), authRequest.getPassword()));
 
-        return ResponseEntity.ok(new UserTokenState(jwt, expiredIn));
+            loginAttemptService.loginSucceeded(ipAddress);
+            
+            SecurityContextHolder.getContext().setAuthentication(authentication);
+            User user = (User) authentication.getPrincipal();
+            String jwt = tokenUtils.createToken(user.getEmail(), user.getId());
+            
+            return ResponseEntity.ok(new UserTokenState(jwt, tokenUtils.getExpiredIn()));
+            
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid credentials or account disabled.");
+        }
+    }
+
+    private String getClientIP(HttpServletRequest request) {
+        String xfHeader = request.getHeader("X-Forwarded-For");
+        if (xfHeader == null || xfHeader.isEmpty() || !xfHeader.contains(request.getRemoteAddr())) {
+            return request.getRemoteAddr();
+        }
+        return xfHeader.split(",")[0];
     }
 
     @PostMapping(value = "/signup", produces = MediaType.TEXT_PLAIN_VALUE)
