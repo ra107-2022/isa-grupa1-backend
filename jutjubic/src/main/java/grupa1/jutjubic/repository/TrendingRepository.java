@@ -32,6 +32,6 @@ public interface TrendingRepository extends JpaRepository<TrendingVideos, Long> 
     """, nativeQuery = true)
     void runTrendingEtl();
 
-    @Query(value = "SELECT * FROM trending_videos ORDER BY calculated_at DESC LIMIT 3", nativeQuery = true)
+    @Query(value = "SELECT * FROM trending_videos ORDER BY calculated_at DESC LIMIT 1", nativeQuery = true)
     TrendingVideos findTop3();
 }
