@@ -73,7 +73,7 @@ public class WebSecurityConfig {
                 .requestMatchers("/ws/**").permitAll()
                 .requestMatchers(HttpMethod.GET, "/api/benchmark/**").permitAll()
                // .requestMatchers("/api/watch-party/**").permitAll()
-
+                .requestMatchers(HttpMethod.GET, "/api/chat/**").permitAll()
                 .requestMatchers("/h2-console/**").permitAll()
                 .requestMatchers(
                         "/favicon.ico",
