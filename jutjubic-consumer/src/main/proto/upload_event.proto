@@ -1,0 +1,12 @@
+syntax = "proto3";
+
+option java_package = "grupa1.consumer.proto";
+option java_outer_classname = "UploadEventProto";
+
+message UploadEvent {
+    string title = 1;
+    int64 size = 2;
+    string author = 3;
+    string filename = 4;
+    int64 timestamp = 5;
+}
