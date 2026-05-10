@@ -29,6 +29,15 @@ public class TokenAuthenticationFilter extends OncePerRequestFilter {
 
     @Override
     public void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain) throws IOException, ServletException {
+        System.out.println("FILTER HIT: " + request.getRequestURI());
+
+        String path = request.getRequestURI();
+
+        if (path.startsWith("/ws")) {
+            chain.doFilter(request, response);
+            return;
+        }
+
         String email;
 
         String token = tokenUtils.getToken(request);

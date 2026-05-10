@@ -7,4 +7,6 @@ public interface IWatchPartyService {
 
     WatchPartyRoom createRoom(User owner);
     WatchPartyRoom getByCode(String code);
+    WatchPartyRoom save(WatchPartyRoom room);
+    void deleteRoom(String code);
 }

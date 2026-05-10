@@ -23,6 +23,7 @@ public class WatchPartyService implements IWatchPartyService {
         room.setOwner(owner);
         room.setCode(generateCode());
 
+
         return roomRepository.save(room);
     }
 
@@ -30,6 +31,17 @@ public class WatchPartyService implements IWatchPartyService {
     public WatchPartyRoom getByCode(String code){
         return roomRepository.findByCode(code)
                 .orElseThrow(() -> new RuntimeException("Room not find."));
+    }
+
+    @Override
+    public WatchPartyRoom save(WatchPartyRoom room) {
+        return roomRepository.save(room);
+    }
+
+    @Override
+    public void deleteRoom(String code) {
+        WatchPartyRoom room = getByCode(code);
+        roomRepository.delete(room);
     }
 
     private String generateCode(){

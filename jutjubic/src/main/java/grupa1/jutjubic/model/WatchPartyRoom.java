@@ -10,15 +10,17 @@ public class WatchPartyRoom {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id; // room id
     private String code;
+    private Long videoId;
 
     @JsonIgnore
     @ManyToOne
     private User owner;
 
     public  WatchPartyRoom() {}
-    public WatchPartyRoom(String code, User owner) {
+    public WatchPartyRoom(String code, User owner, Long videoId) {
         this.code = code;
         this.owner = owner;
+        this.videoId = videoId;
     }
 
     // get, set
@@ -30,5 +32,13 @@ public class WatchPartyRoom {
 
     public User getOwner() { return owner; }
     public void setOwner(User owner) { this.owner = owner; }
+
+    public Long getVideoId() {
+        return videoId;
+    }
+
+    public void setVideoId(Long videoId) {
+        this.videoId = videoId;
+    }
 
 }
