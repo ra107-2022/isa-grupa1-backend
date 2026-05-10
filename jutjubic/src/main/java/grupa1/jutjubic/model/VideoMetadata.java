@@ -70,7 +70,7 @@ public class VideoMetadata {
     private Long guestViews = 0L;
 
     @Column(name = "thumbnail_compressed")
-    private boolean thumbnailCompressed = false;
+    private Boolean thumbnailCompressed = false;
 
     public VideoMetadata() { super(); }
     public VideoMetadata(User user, LocalDateTime uploadDate, LocalDateTime premiereDate, String videoTitle, String description, String tags, Long duration, String videoFileName, Long videoSize, String videoOriginalFileName, String thumbnailFileName, Long thumbnailSize, String thumbnailOriginalFileName, Double lat, Double lon) {
