@@ -69,6 +69,9 @@ public class VideoMetadata {
     @Column (name = "guest_views", nullable = false)
     private Long guestViews = 0L;
 
+    @Column(name = "thumbnail_compressed")
+    private boolean thumbnailCompressed = false;
+
     public VideoMetadata() { super(); }
     public VideoMetadata(User user, LocalDateTime uploadDate, LocalDateTime premiereDate, String videoTitle, String description, String tags, Long duration, String videoFileName, Long videoSize, String videoOriginalFileName, String thumbnailFileName, Long thumbnailSize, String thumbnailOriginalFileName, Double lat, Double lon) {
         super();

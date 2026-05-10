@@ -31,7 +31,15 @@ public class TokenAuthenticationFilter extends OncePerRequestFilter {
     public void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain) throws IOException, ServletException {
         System.out.println("FILTER HIT: " + request.getRequestURI());
 
+
+
         String path = request.getRequestURI();
+        String method = request.getMethod();
+
+        if(path.startsWith("/api/videos") && "GET".equals(method)){
+            chain.doFilter(request, response);
+            return;
+        }
 
         if (path.startsWith("/ws")) {
             chain.doFilter(request, response);
@@ -40,7 +48,12 @@ public class TokenAuthenticationFilter extends OncePerRequestFilter {
 
         String email;
 
+
         String token = tokenUtils.getToken(request);
+
+        System.out.println("TOKEN: " + token);
+        System.out.println("REQUEST PATH: " + path);
+        System.out.println("REQUEST METHOD: " + method);
 
         try {
             if (token != null) {
