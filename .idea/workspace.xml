@@ -4,7 +4,9 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="c47695f5-7d45-4a51-99cd-b04b5a3252d9" name="Changes" comment="" />
+    <list default="true" id="c47695f5-7d45-4a51-99cd-b04b5a3252d9" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -51,9 +53,9 @@
     "RunOnceActivity.git.unshallow": "true",
     "RunOnceActivity.typescript.service.memoryLimit.init": "true",
     "Shell Script.mvnw.executor": "Run",
-    "git-widget-placeholder": "feat/views",
+    "git-widget-placeholder": "feat/performance",
     "kotlin-language-version-configured": "true",
-    "last_opened_file_path": "/home/filip/programming/java/isa_proj/isa-grupa1-backend",
+    "last_opened_file_path": "/home/filip/Downloads/BP2_08_JDBC_materijali/JDBC_Theatre",
     "nodejs_package_manager_path": "npm",
     "settings.editor.selected.configurable": "preferences.pluginManager",
     "vue.rearranger.settings.migration": "true"
