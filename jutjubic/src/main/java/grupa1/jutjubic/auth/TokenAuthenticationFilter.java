@@ -36,11 +36,6 @@ public class TokenAuthenticationFilter extends OncePerRequestFilter {
         String path = request.getRequestURI();
         String method = request.getMethod();
 
-        if(path.startsWith("/api/videos") && "GET".equals(method)){
-            chain.doFilter(request, response);
-            return;
-        }
-
         if (path.startsWith("/ws")) {
             chain.doFilter(request, response);
             return;

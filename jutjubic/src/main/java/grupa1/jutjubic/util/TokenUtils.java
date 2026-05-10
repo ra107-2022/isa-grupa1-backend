@@ -59,6 +59,7 @@ public class TokenUtils {
 
     public String getToken(HttpServletRequest request) {
         String authHeader = request.getHeader(AUTH_HEADER);
+        System.out.println("AUTH HEADER VALUE: " + authHeader);
 
         if  (authHeader != null && authHeader.startsWith("Bearer ")) {
             return authHeader.substring(7);
@@ -141,7 +142,11 @@ public class TokenUtils {
         final String username = getEmailFromToken(token);
         final Date issuedAt = getIssuedAtDateFromToken(token);
         final Date expiration = getExpirationDateFromToken(token);
-
+        System.out.println("USERNAME FROM TOKEN: " + username);
+        System.out.println("USER EMAIL: " + user.getEmail());
+        System.out.println("ISSUED AT: " + issuedAt);
+        System.out.println("EXPIRATION: " + expiration);
+        System.out.println("NOW: " + new Date());
         return (username != null && username.equals(user.getEmail()) && issuedAt.before(expiration));
     }
 
