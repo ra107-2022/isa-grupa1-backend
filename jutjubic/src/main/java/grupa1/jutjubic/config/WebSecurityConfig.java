@@ -71,6 +71,7 @@ public class WebSecurityConfig {
                 .requestMatchers(HttpMethod.GET, "/api/ratings/**").permitAll()
                 .requestMatchers("/actuator/prometheus").permitAll()
                 .requestMatchers("/ws/**").permitAll()
+                .requestMatchers(HttpMethod.GET, "/api/benchmark/**").permitAll()
                // .requestMatchers("/api/watch-party/**").permitAll()
 
                 .requestMatchers("/h2-console/**").permitAll()
