@@ -9,6 +9,7 @@ import grupa1.jutjubic.service.IVideoMetadataService;
 import grupa1.jutjubic.service.IViewService;
 import grupa1.jutjubic.service.impl.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.support.ResourceRegion;
 import org.springframework.http.*;
@@ -43,6 +44,15 @@ public class VideoController {
     @Autowired
     private TrendingService trendingService;
 
+    @Autowired
+    private VideoProducer videoProducer;
+
+    @Value("${video.upload-dir}")
+    private String uploadDir;
+
+    @Value("${video.processed-dir}")
+    private String processedDir;
+
     @PostMapping("/upload")
     @PreAuthorize("hasRole('USER')")
     public ResponseEntity<VideoMetadata> uploadVideo(
@@ -59,7 +69,17 @@ public class VideoController {
         final Long ownerId = userService.findByUsername(user.getName()).getId();
         return videoService
                 .save(new UploadRequest(ownerId , title, description, premiereDate, tags, videoFile, thumbnailFile, lat, lon))
-                .map(ResponseEntity::ok)
+                .map( video -> {
+
+                    VideoTranscodingMessage msg = new VideoTranscodingMessage();
+
+                    msg.setInputPath(uploadDir + "/" + video.getVideoFileName());
+                    msg.setOutputPath(processedDir + "/" + video.getVideoFileName());
+
+                    videoProducer.sendVideoForTranscoding(msg);
+
+                    return ResponseEntity.ok(video);
+                        })
                 .orElseGet(() -> ResponseEntity
                         .status(HttpStatus.INTERNAL_SERVER_ERROR)
                         .build());

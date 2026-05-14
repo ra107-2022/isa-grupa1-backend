@@ -32,7 +32,10 @@ public class VideoMetadataService implements IVideoMetadataService {
     @Value("${video.upload-dir:uploads/videos}")
     private String videoDir;
 
-    @Value("${video.upload-dir:uploads/thumbnails}")
+//    @Value("${video.upload-dir:uploads/thumbnails}")
+//    private String thumbnailDir;
+
+    @Value("${video.thumbnail-dir:uploads/thumbnails}")
     private String thumbnailDir;
 
     @Autowired
@@ -91,7 +94,8 @@ public class VideoMetadataService implements IVideoMetadataService {
 
          String videoFileName = UUID.randomUUID() + "_" + uploadRequest
                  .getVideo()
-                 .getName()
+                 //.getName()
+                 .getOriginalFilename()
                  .replaceAll("[^a-zA-Z0-9.\\-]", "_");
          videoFileName += ".mp4";
          Path videoPath = Paths.get(videoDir).resolve(videoFileName);
@@ -106,7 +110,8 @@ public class VideoMetadataService implements IVideoMetadataService {
 
          String thumbnailFileName = UUID.randomUUID() + "_" + uploadRequest
                 .getThumbnail()
-                .getName()
+                //.getName()
+                 .getOriginalFilename()
                 .replaceAll("[^a-zA-Z0-9.\\-]", "_");
          thumbnailFileName += ".jpg";
          Path thumbnailPath = Paths.get(thumbnailDir).resolve(thumbnailFileName);
