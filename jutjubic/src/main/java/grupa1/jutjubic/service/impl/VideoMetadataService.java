@@ -1,5 +1,6 @@
 package grupa1.jutjubic.service.impl;
 
+import grupa1.jutjubic.dto.UploadEventDto;
 import grupa1.jutjubic.dto.UploadRequest;
 import grupa1.jutjubic.model.User;
 import grupa1.jutjubic.model.VideoMetadata;
@@ -44,6 +45,9 @@ public class VideoMetadataService implements IVideoMetadataService {
     @Autowired
     private UserRepository userRepository;
 
+    @Autowired
+    private UploadEventProducerService uploadEventProducerService;
+
     @Override
     public Optional<VideoMetadata> findById(Long id) { return videoMetadataRepository.findById(id); }
 
@@ -86,11 +90,11 @@ public class VideoMetadataService implements IVideoMetadataService {
 
     @Override
     public Optional<VideoMetadata> save(UploadRequest uploadRequest) {
-         Optional<VideoMetadata> video = videoMetadataRepository.findByUser_IdAndVideoTitle(uploadRequest.getOwnerId(), uploadRequest.getTitle()) ;
-         if (video.isPresent()) { return Optional.empty(); }
+        Optional<VideoMetadata> video = videoMetadataRepository.findByUser_IdAndVideoTitle(uploadRequest.getOwnerId(), uploadRequest.getTitle()) ;
+        if (video.isPresent()) { return Optional.empty(); }
 
-         Optional<User> user_opt = userRepository.findById(uploadRequest.getOwnerId());
-         if (user_opt.isEmpty()) { return Optional.empty(); }
+        Optional<User> user_opt = userRepository.findById(uploadRequest.getOwnerId());
+        if (user_opt.isEmpty()) { return Optional.empty(); }
 
          String videoFileName = UUID.randomUUID() + "_" + uploadRequest
                  .getVideo()
@@ -108,51 +112,63 @@ public class VideoMetadataService implements IVideoMetadataService {
              return Optional.empty();
          }
 
-         String thumbnailFileName = UUID.randomUUID() + "_" + uploadRequest
+        String thumbnailFileName = UUID.randomUUID() + "_" + uploadRequest
                 .getThumbnail()
                 //.getName()
                  .getOriginalFilename()
                 .replaceAll("[^a-zA-Z0-9.\\-]", "_");
-         thumbnailFileName += ".jpg";
-         Path thumbnailPath = Paths.get(thumbnailDir).resolve(thumbnailFileName);
-         try {
-             if (Files.exists(thumbnailPath)) {
-                 Files.delete(videoPath);
-                 return Optional.empty();
-             }
-             Files.copy(uploadRequest.getThumbnail().getInputStream(), thumbnailPath, StandardCopyOption.REPLACE_EXISTING);
-         } catch (Exception e1) {
-             try {
-                 Files.delete(videoPath);
-             } catch (Exception e2) { return Optional.empty(); }
-             return Optional.empty();
-         }
+        thumbnailFileName += ".jpg";
+        Path thumbnailPath = Paths.get(thumbnailDir).resolve(thumbnailFileName);
+        try {
+            if (Files.exists(thumbnailPath)) {
+                Files.delete(videoPath);
+                return Optional.empty();
+            }
+            Files.copy(uploadRequest.getThumbnail().getInputStream(), thumbnailPath, StandardCopyOption.REPLACE_EXISTING);
+        } catch (Exception e1) {
+            try {
+                Files.delete(videoPath);
+            } catch (Exception e2) { return Optional.empty(); }
+            return Optional.empty();
+        }
 
-         String tags = uploadRequest
-                 .getTags()
-                 .stream()
-                 .map((tag) -> tag.replaceAll("\\|", "_"))
-                 .reduce("", (acc, tag) -> acc + "|" + tag);
+        String tags = uploadRequest
+                .getTags()
+                .stream()
+                .map((tag) -> tag.replaceAll("\\|", "_"))
+                .reduce("", (acc, tag) -> acc + "|" + tag);
 
-         Long duration = getDurationInSeconds(videoPath.toFile());
+        Long duration = getDurationInSeconds(videoPath.toFile());
 
-         return Optional.of(videoMetadataRepository.save(new VideoMetadata(
-                  user_opt.get(),
-                  LocalDateTime.now(),
-                  uploadRequest.getPremiereDate(),
-                  uploadRequest.getTitle(),
-                  uploadRequest.getDescription(),
-                  tags,
-                  duration,
-                  videoFileName,
-                  uploadRequest.getVideo().getSize(),
-                  uploadRequest.getVideo().getName(),
-                  thumbnailFileName,
-                  uploadRequest.getThumbnail().getSize(),
-                  uploadRequest.getThumbnail().getName(),
-                  uploadRequest.getLat(),
-                  uploadRequest.getLon()
-         )));
+        VideoMetadata saved = videoMetadataRepository.save(new VideoMetadata(
+                user_opt.get(),
+                LocalDateTime.now(),
+                uploadRequest.getPremiereDate(),
+                uploadRequest.getTitle(),
+                uploadRequest.getDescription(),
+                tags,
+                duration,
+                videoFileName,
+                uploadRequest.getVideo().getSize(),
+                uploadRequest.getVideo().getName(),
+                thumbnailFileName,
+                uploadRequest.getThumbnail().getSize(),
+                uploadRequest.getThumbnail().getName(),
+                uploadRequest.getLat(),
+                uploadRequest.getLon()
+        ));
+
+        UploadEventDto event = new UploadEventDto(
+                saved.getVideoTitle(),
+                uploadRequest.getVideo().getSize(),
+                user_opt.get().getUsername(),
+                saved.getVideoFileName(),
+                System.currentTimeMillis()
+        );
+        uploadEventProducerService.sendJsonEvent(event);
+        uploadEventProducerService.sendProtoEvent(event);
+
+        return Optional.of(saved);
     }
 
     @Override

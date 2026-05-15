@@ -60,7 +60,7 @@ public class WebSecurityConfig {
                 .authenticationEntryPoint(restAuthenticationEntryPoint));
         http.authorizeHttpRequests(auth -> auth
                 .requestMatchers("/api/auth/**").permitAll()
-
+                .requestMatchers(HttpMethod.GET, "/api/videos/*/video").permitAll()
                 .requestMatchers(HttpMethod.PUT, "/api/videos/*/view").permitAll()
                 .requestMatchers(HttpMethod.PUT, "/api/videos/*/view_by_user").authenticated()
                 .requestMatchers(HttpMethod.GET, "/api/users/**").permitAll()
@@ -71,8 +71,10 @@ public class WebSecurityConfig {
                 .requestMatchers(HttpMethod.GET, "/api/ratings/**").permitAll()
                 .requestMatchers("/actuator/prometheus").permitAll()
                 .requestMatchers("/ws/**").permitAll()
+                .requestMatchers(HttpMethod.GET, "/api/benchmark/**").permitAll()
+                .requestMatchers("/actuator/health").permitAll()
                // .requestMatchers("/api/watch-party/**").permitAll()
-
+                .requestMatchers(HttpMethod.GET, "/api/chat/**").permitAll()
                 .requestMatchers("/h2-console/**").permitAll()
                 .requestMatchers(
                         "/favicon.ico",
