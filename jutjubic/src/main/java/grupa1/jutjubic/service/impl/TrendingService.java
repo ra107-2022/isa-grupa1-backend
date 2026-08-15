@@ -13,7 +13,7 @@ public class TrendingService {
         this.trendingRepository = trendingRepository;
     }
 
-    @Scheduled(cron = "0 0 0 * * *")
+    @Scheduled(cron = "0 16 22 * * *")
     public void executeDailyEtl() {
         trendingRepository.runTrendingEtl();
     }

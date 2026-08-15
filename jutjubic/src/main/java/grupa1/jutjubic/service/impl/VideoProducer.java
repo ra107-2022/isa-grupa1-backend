@@ -14,7 +14,7 @@ public class VideoProducer {
     }
 
     public void sendVideoForTranscoding(VideoTranscodingMessage msg) {
-        rabbitTemplate.convertAndSend("video-transcoding-queue", msg);
+        rabbitTemplate.convertAndSend(RabbitMQConfig.TRANSCODING_EXCHANGE, "", msg);
         System.out.println("Poslat video u queue: " + msg.getInputPath());
     }
 }

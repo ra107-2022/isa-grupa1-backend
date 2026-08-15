@@ -1,16 +1,22 @@
 package grupa1.jutjubic.service.impl;
 
 import ch.qos.logback.core.net.SyslogOutputStream;
+import grupa1.jutjubic.config.RabbitMQConfig;
 import grupa1.jutjubic.dto.VideoTranscodingMessage;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
-@Service
-public class VideoConsumer {
+import java.io.File;
 
+@Component
+public class VideoConsumer {
+    @Value("${ffmpeg.path:ffmpeg}")
+    private String ffmpegPath;
     // consumer slusa queue i ceka nove poruke
     // rabitmq ce automatski poslati primljenu poruku samo 1 consumeru
-    @RabbitListener(queues = "video-transcoding-queue")
+    @RabbitListener(queues = RabbitMQConfig.VIDEO_QUEUE, concurrency = "2-5")
     public void consume(VideoTranscodingMessage message){
 
         String input = message.getInputPath();
@@ -18,25 +24,36 @@ public class VideoConsumer {
 
         System.out.println("Consumer1 pocinje transcoding...");
 
-         try {
-            // FFmpeg command: ffmpeg -i input.mp4 -vf scale=1280:720 output.mp4
+        try {
+            File outputFile = new File(output);
+            File parentDirectory = outputFile.getParentFile();
+            if (parentDirectory != null && !parentDirectory.exists()) {
+                boolean created = parentDirectory.mkdirs();
+                if (created) {
+                    System.out.println("Kreiran folder za processed videa: " + parentDirectory.getAbsolutePath());
+                }
+            }
 
             ProcessBuilder builder = new ProcessBuilder(
-                    "C:\\ffmpeg\\ffmpeg-8.1.1-essentials_build\\bin\\ffmpeg.exe", // pokrece ffmpeg program
-                    "-i", input, // input file i putanja do originalnog fajla
-                    "-vf",  // video filter
-                    "scale=1280:720", // ffmpeg filter -> promeni rezoluciju videa na 1280x720
-                    output //novi kompresovani fajl
-                     );
+                    ffmpegPath,
+                    "-i", input,
+                    "-y",
+                    "-vf", "scale=1280:720",
+                    output
+            );
             builder.inheritIO();
 
-
             Process process = builder.start();
-            process.waitFor(); // ceka se da ffmpeg zavrsi
-            System.out.println("Consumer 1 zavrsio transcoding." );
+            int exitCode = process.waitFor();
+
+            if (exitCode == 0) {
+                System.out.println("Consumer 1 uspesno zavrsio transcoding.");
+            } else {
+                System.err.println("FFmpeg proces je zavrsio sa greskom. Exit code: " + exitCode);
+            }
 
         } catch (Exception e) {
-            System.out.println("Greska tokom transcoding.");
+            System.err.println("Greska tokom transcodinga:");
             e.printStackTrace();
         }
     }

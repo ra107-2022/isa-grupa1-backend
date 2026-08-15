@@ -1,5 +1,8 @@
 package grupa1.jutjubic.dto;
 
+import lombok.NoArgsConstructor;
+
+@NoArgsConstructor
 public class VideoTranscodingMessage {
 
     private String inputPath;

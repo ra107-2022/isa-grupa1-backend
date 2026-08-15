@@ -1,13 +1,15 @@
 package grupa1.jutjubic.service.impl;
 
+import grupa1.jutjubic.config.RabbitMQConfig;
 import grupa1.jutjubic.dto.VideoTranscodingMessage;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
+import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
-@Service
+@Component
 public class VideoConsumer2 {
 
-    @RabbitListener (queues = "video-transcoding-queue") // kad stigne nova poruka u video-transcoding-queue
+    @RabbitListener (queues = RabbitMQConfig.VIDEO_LOG_QUEUE) // kad stigne nova poruka u video-transcoding-queue
     public void consume(VideoTranscodingMessage message){
 
         System.out.println("Consumer2 dobio poruku (status log)");

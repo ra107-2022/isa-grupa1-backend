@@ -20,7 +20,8 @@ services:
     volumes:
       - ./uploads:/app/uploads
     depends_on:
-      - rabbitmq
+      rabbitmq:
+        condition: service_healthy
     healthcheck:
       test: ["CMD", "wget", "-qO-", "http://localhost:8080/actuator/health"]
       interval: 10s
@@ -48,7 +49,8 @@ services:
     volumes:
       - ./uploads:/app/uploads
     depends_on:
-      - rabbitmq
+      rabbitmq:
+        condition: service_healthy
     healthcheck:
       test: ["CMD", "wget", "-qO-", "http://localhost:8080/actuator/health"]
       interval: 10s
@@ -89,6 +91,12 @@ services:
     environment:
       RABBITMQ_DEFAULT_USER: user
       RABBITMQ_DEFAULT_PASS: password
+    healthcheck:
+      test: [ "CMD", "rabbitmq-diagnostics", "-q", "ping" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 20s
 
 volumes:
   grafana-storage:
