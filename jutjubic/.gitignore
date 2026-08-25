@@ -32,3 +32,6 @@ uploads/
 
 ### VS Code ###
 .vscode/
+
+### Custom ###
+.ai/*
