@@ -30,10 +30,16 @@ import java.util.stream.Collectors;
 
 @Service
 public class VideoMetadataService implements IVideoMetadataService {
-    @Value("${video.upload-dir:uploads/videos}")
+    @Value("${video.upload-dir:uploads/videos/upload}")
     private String videoDir;
 
-    @Value("${video.upload-dir:uploads/thumbnails}")
+    @Value("${video.processed-dir:uploads/videos/processed}")
+    private String processedDir;
+
+//    @Value("${video.upload-dir:uploads/thumbnails}")
+//    private String thumbnailDir;
+
+    @Value("${video.thumbnail-dir:uploads/thumbnails}")
     private String thumbnailDir;
 
     @Autowired
@@ -93,26 +99,28 @@ public class VideoMetadataService implements IVideoMetadataService {
         Optional<User> user_opt = userRepository.findById(uploadRequest.getOwnerId());
         if (user_opt.isEmpty()) { return Optional.empty(); }
 
-        String videoFileName = UUID.randomUUID() + "_" + uploadRequest
-                .getVideo()
-                .getName()
-                .replaceAll("[^a-zA-Z0-9.\\-]", "_");
-        videoFileName += ".mp4";
-        Path videoPath = Paths.get(videoDir).resolve(videoFileName);
-        try {
-            if (Files.exists(videoPath)) {
-                return Optional.empty();
-            }
-            Files.copy(uploadRequest.getVideo().getInputStream(), videoPath, StandardCopyOption.REPLACE_EXISTING);
-        } catch (Exception e) {
-            return Optional.empty();
-        }
+         String videoFileName = UUID.randomUUID() + "_" + uploadRequest
+                 .getVideo()
+                 //.getName()
+                 .getOriginalFilename()
+                 .replaceAll("[^a-zA-Z0-9.\\-]", "_");
+//         videoFileName += ".mp4";
+         Path videoPath = Paths.get(videoDir).resolve(videoFileName);
+         try {
+             if (Files.exists(videoPath)) {
+                 return Optional.empty();
+             }
+             Files.copy(uploadRequest.getVideo().getInputStream(), videoPath, StandardCopyOption.REPLACE_EXISTING);
+         } catch (Exception e) {
+             return Optional.empty();
+         }
 
         String thumbnailFileName = UUID.randomUUID() + "_" + uploadRequest
                 .getThumbnail()
-                .getName()
+                //.getName()
+                 .getOriginalFilename()
                 .replaceAll("[^a-zA-Z0-9.\\-]", "_");
-        thumbnailFileName += ".jpg";
+//        thumbnailFileName += ".jpg";
         Path thumbnailPath = Paths.get(thumbnailDir).resolve(thumbnailFileName);
         try {
             if (Files.exists(thumbnailPath)) {
@@ -211,7 +219,7 @@ public class VideoMetadataService implements IVideoMetadataService {
     @Override
     public Path getFilePath(VideoMetadata metadata, boolean forVideo) {
         return Paths
-                .get(forVideo ? videoDir : thumbnailDir)
+                .get(forVideo ? processedDir : thumbnailDir)
                 .resolve(forVideo ? metadata.getVideoFileName() : metadata.getThumbnailFileName());
     }
 

@@ -6,11 +6,28 @@
   <component name="ChangeListManager">
     <list default="true" id="c47695f5-7d45-4a51-99cd-b04b5a3252d9" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/jutjubic/Dockerfile" beforeDir="false" afterPath="$PROJECT_DIR$/jutjubic/Dockerfile" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/jutjubic/docker-compose.yml" beforeDir="false" afterPath="$PROJECT_DIR$/jutjubic/docker-compose.yml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/jutjubic/prometheus.yml" beforeDir="false" afterPath="$PROJECT_DIR$/jutjubic/prometheus.yml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/jutjubic/src/main/java/grupa1/jutjubic/JutjubicApplication.java" beforeDir="false" afterPath="$PROJECT_DIR$/jutjubic/src/main/java/grupa1/jutjubic/JutjubicApplication.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/jutjubic/src/main/java/grupa1/jutjubic/config/RabbitMQConfig.java" beforeDir="false" afterPath="$PROJECT_DIR$/jutjubic/src/main/java/grupa1/jutjubic/config/RabbitMQConfig.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/jutjubic/src/main/java/grupa1/jutjubic/controller/VideoController.java" beforeDir="false" afterPath="$PROJECT_DIR$/jutjubic/src/main/java/grupa1/jutjubic/controller/VideoController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/jutjubic/src/main/java/grupa1/jutjubic/dto/VideoTranscodingMessage.java" beforeDir="false" afterPath="$PROJECT_DIR$/jutjubic/src/main/java/grupa1/jutjubic/dto/VideoTranscodingMessage.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/jutjubic/src/main/java/grupa1/jutjubic/service/impl/TrendingService.java" beforeDir="false" afterPath="$PROJECT_DIR$/jutjubic/src/main/java/grupa1/jutjubic/service/impl/TrendingService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/jutjubic/src/main/java/grupa1/jutjubic/service/impl/VideoConsumer.java" beforeDir="false" afterPath="$PROJECT_DIR$/jutjubic/src/main/java/grupa1/jutjubic/service/impl/VideoConsumer.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/jutjubic/src/main/java/grupa1/jutjubic/service/impl/VideoConsumer2.java" beforeDir="false" afterPath="$PROJECT_DIR$/jutjubic/src/main/java/grupa1/jutjubic/service/impl/VideoConsumer2.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/jutjubic/src/main/java/grupa1/jutjubic/service/impl/VideoMetadataService.java" beforeDir="false" afterPath="$PROJECT_DIR$/jutjubic/src/main/java/grupa1/jutjubic/service/impl/VideoMetadataService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/jutjubic/src/main/java/grupa1/jutjubic/service/impl/VideoProducer.java" beforeDir="false" afterPath="$PROJECT_DIR$/jutjubic/src/main/java/grupa1/jutjubic/service/impl/VideoProducer.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/jutjubic/src/main/resources/application.properties" beforeDir="false" afterPath="$PROJECT_DIR$/jutjubic/src/main/resources/application.properties" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="EmbeddingIndexingInfo">
+    <option name="cachedIndexableFilesCount" value="181" />
+    <option name="fileBasedEmbeddingIndicesEnabled" value="true" />
   </component>
   <component name="FileTemplateManagerImpl">
     <option name="RECENT_TEMPLATES">
@@ -45,23 +62,39 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "ModuleVcsDetector.initialDetectionPerformed": "true",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252": "true",
-    "RunOnceActivity.git.unshallow": "true",
-    "RunOnceActivity.typescript.service.memoryLimit.init": "true",
-    "Shell Script.mvnw.executor": "Run",
-    "git-widget-placeholder": "feat/performance",
-    "kotlin-language-version-configured": "true",
-    "last_opened_file_path": "/home/filip/Downloads/BP2_08_JDBC_materijali/JDBC_Theatre",
-    "nodejs_package_manager_path": "npm",
-    "settings.editor.selected.configurable": "preferences.pluginManager",
-    "vue.rearranger.settings.migration": "true"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;ModuleVcsDetector.initialDetectionPerformed&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.MCP Project settings loaded&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.typescript.service.memoryLimit.init&quot;: &quot;true&quot;,
+    &quot;Shell Script.mvnw.executor&quot;: &quot;Run&quot;,
+    &quot;com.intellij.ml.llm.matterhorn.ej.ui.settings.DefaultModelSelectionForGA.v1&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;feat/transcoding&quot;,
+    &quot;ignore.virus.scanning.warn.message&quot;: &quot;true&quot;,
+    &quot;junie.onboarding.icon.badge.shown&quot;: &quot;true&quot;,
+    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
+    &quot;last_opened_file_path&quot;: &quot;/home/filip/Downloads/BP2_08_JDBC_materijali/JDBC_Theatre&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;preferences.pluginManager&quot;,
+    &quot;to.speed.mode.migration.done&quot;: &quot;true&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   }
-}]]></component>
-  <component name="RunManager">
+}</component>
+  <component name="RunManager" selected="Spring Boot.JutjubicApplication">
+    <configuration name="JutjubicApplication (1)" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot" nameIsGenerated="true">
+      <module name="jutjubic" />
+      <option name="SPRING_BOOT_MAIN_CLASS" value="grupa1.jutjubic.JutjubicApplication" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
     <configuration name="JutjubicApplication" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot" nameIsGenerated="true">
       <module name="idk" />
       <option name="SPRING_BOOT_MAIN_CLASS" value="Grupa_1.idk.JutjubicApplication" />
@@ -73,8 +106,8 @@
   <component name="SharedIndexes">
     <attachedChunks>
       <set>
-        <option value="bundled-jdk-30f59d01ecdd-2fc7cc6b9a17-intellij.indexing.shared.core-IU-253.30387.90" />
-        <option value="bundled-js-predefined-d6986cc7102b-9b0f141eb926-JavaScript-IU-253.30387.90" />
+        <option value="bundled-jdk-30f59d01ecdd-2fc7cc6b9a17-intellij.indexing.shared.core-IU-253.32098.37" />
+        <option value="bundled-js-predefined-d6986cc7102b-9b0f141eb926-JavaScript-IU-253.32098.37" />
       </set>
     </attachedChunks>
   </component>
@@ -88,6 +121,8 @@
       <workItem from="1769093048347" duration="595000" />
       <workItem from="1769261803946" duration="59000" />
       <workItem from="1769718578663" duration="101000" />
+      <workItem from="1786629511164" duration="7281000" />
+      <workItem from="1786638045651" duration="7258000" />
     </task>
     <servers />
   </component>

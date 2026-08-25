@@ -10,6 +10,12 @@ RUN mvn clean package -DskipTests
 
 # Stage 2: Runtime environment
 FROM eclipse-temurin:21-jre-alpine
+
+# Install FFmpeg via apk
+RUN apk add --no-cache ffmpeg
+RUN apk add --no-cache tzdata
+ENV TZ=Europe/Belgrade
+
 WORKDIR /app
 # Copy only the built jar from the first stage
 COPY --from=build /app/target/*.jar app.jar

@@ -1,5 +1,6 @@
 package grupa1.jutjubic;
 
+import jakarta.annotation.PostConstruct;
 import org.modelmapper.ModelMapper;
 import org.springframework.amqp.rabbit.annotation.EnableRabbit;
 import org.springframework.boot.SpringApplication;
@@ -12,6 +13,8 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.boot.CommandLineRunner;
 
+import java.util.TimeZone;
+
 @SpringBootApplication
 @EnableCaching
 @EnableScheduling
@@ -21,6 +24,12 @@ public class JutjubicApplication {
 	@Bean
 	public ModelMapper getModelMapper() {
 		return new ModelMapper();
+	}
+
+	@PostConstruct
+	public void init() {
+		// Sets default JVM timezone on startup
+		TimeZone.setDefault(TimeZone.getTimeZone("Europe/Belgrade"));
 	}
 
 	public static void main(String[] args) {

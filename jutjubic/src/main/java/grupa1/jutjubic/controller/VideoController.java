@@ -8,22 +8,23 @@ import grupa1.jutjubic.model.VideoView;
 import grupa1.jutjubic.service.IVideoMetadataService;
 import grupa1.jutjubic.service.IViewService;
 import grupa1.jutjubic.service.impl.*;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.support.ResourceRegion;
 import org.springframework.http.*;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.security.Principal;
 import java.time.Duration;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
+@Slf4j
 @RestController
 @RequestMapping("/api/videos")
 public class VideoController {
@@ -43,26 +44,47 @@ public class VideoController {
     @Autowired
     private TrendingService trendingService;
 
+    @Autowired
+    private VideoProducer videoProducer;
+
+    @Value("${video.upload-dir}")
+    private String uploadDir;
+
+    @Value("${video.processed-dir}")
+    private String processedDir;
+
     @PostMapping("/upload")
     @PreAuthorize("hasRole('USER')")
-    public ResponseEntity<VideoMetadata> uploadVideo(
-            Principal user,
-            @RequestParam("title") String title,
-            @RequestParam("video") MultipartFile videoFile,
-            @RequestParam("thumbnail") MultipartFile thumbnailFile,
-            @RequestParam("description") String description,
-            @RequestParam(name = "premiere_date", required = false) LocalDateTime premiereDate,
-            @RequestParam(name = "latitude", required = false) Double lat,
-            @RequestParam(name = "longitude", required = false) Double lon,
-            @RequestParam("tags") List<String> tags
-        ) {
-        final Long ownerId = userService.findByUsername(user.getName()).getId();
-        return videoService
-                .save(new UploadRequest(ownerId , title, description, premiereDate, tags, videoFile, thumbnailFile, lat, lon))
-                .map(ResponseEntity::ok)
-                .orElseGet(() -> ResponseEntity
-                        .status(HttpStatus.INTERNAL_SERVER_ERROR)
-                        .build());
+    public ResponseEntity<VideoMetadata> uploadVideo( // Kept original return type
+          Principal user,
+          @RequestParam("title") String title,
+          @RequestParam("video") MultipartFile videoFile,
+          @RequestParam("thumbnail") MultipartFile thumbnailFile,
+          @RequestParam("description") String description,
+          @RequestParam(name = "premiere_date", required = false) LocalDateTime premiereDate,
+          @RequestParam(name = "latitude", required = false) Double lat,
+          @RequestParam(name = "longitude", required = false) Double lon,
+          @RequestParam("tags") List<String> tags
+    ) {
+        try {
+            Long ownerId = userService.findByUsername(user.getName()).getId();
+
+            VideoMetadata video = videoService.save(new UploadRequest(ownerId, title, description, premiereDate, tags, videoFile, thumbnailFile, lat, lon))
+                    .orElseThrow(() -> new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Failed to save video to database"));
+
+            VideoTranscodingMessage msg = new VideoTranscodingMessage();
+            msg.setInputPath(uploadDir + "/" + video.getVideoFileName());
+            msg.setOutputPath(processedDir + "/" + video.getVideoFileName());
+
+            videoProducer.sendVideoForTranscoding(msg);
+
+            return ResponseEntity.ok(video);
+
+        } catch (Throwable t) {
+            t.printStackTrace(); // Print stack trace to console
+            // Throwing ResponseStatusException automatically sends HTTP 500 with the message to Postman/Frontend
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, t.getMessage(), t);
+        }
     }
 
     @GetMapping("/{id}/thumbnail")
@@ -96,6 +118,7 @@ public class VideoController {
         LocalDateTime now = LocalDateTime.now();
         if (metadata.getPremiereDate() != null &&
                 now.isBefore(metadata.getPremiereDate())) {
+            log.info("User tried to access premiered video before it was available");
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }
 
