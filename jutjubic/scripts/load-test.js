@@ -9,7 +9,7 @@ export const options = {
 };
 
 export default function () {
-    const url = 'http://backend:8080/api/videos/trending';
+    const url = 'http://nginx:80/api/videos/trending';
 
     const res = http.get(url);
 
